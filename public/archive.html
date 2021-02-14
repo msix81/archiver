@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#563d7c">
+	<title>Archiver</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/frontend.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var basePathBackend = '';
+		var chosenUnencryptedFile = null;
+		var chosenDirectory = null;
+		var timer;
+
+		$(document).ready(function() {
+			var unencryptedFilesElm = $('#unencryptedFiles');
+			var directoriesElm = $('#directories');
+			var newFileNameSuggestionsElm = $('#newFileNameSuggestions');
+			var newFileNameSuggestionsContainerElm = $('#newFileNameSuggestionsContainer');
+			var newFileNameElm = $('#newFileName');
+			var rootDirectorySelectorElm = $('#rootDirectorySelector');
+			var chosenUnencryptedFileElm = $('#chosenUnencryptedFile');
+			
+			loadQueue();
+			chooseSubdirectory('/');
+
+			// binds
+			rootDirectorySelectorElm.click(function() {
+				chooseSubdirectory('/');
+			});
+			$('#archive').click(function() {
+				$('.alert').hide();
+				var newFileName = newFileNameElm.val();
+				if ((chosenUnencryptedFile != null) && (chosenDirectory != null) && (newFileName != null)) {
+					archive(chosenUnencryptedFile, chosenDirectory, newFileName);
+				} else {
+					$('#errormessage').show();
+				}
+			});
+			$('#logout').click(function(evt) {
+				logout();
+				location.href = '/';
+			});
+			$('#directoryNamePattern').on('input', function() {
+				clearTimeout(timer);
+				directoriesElm.empty().append('Verzeichnisse werden geladen...');
+				timer = setTimeout(function() {
+					loadSubdirectories(chosenDirectory, 25, $('#directoryNamePattern').val());
+				}, 400);
+			});
+			$('#suggestedFileNameIncrement').click(function(evt) {
+				pickFileNameSuggestion($('#newFileName').val(), 1, null);
+			});
+			$('#suggestedFileNameDecrement').click(function(evt) {
+				pickFileNameSuggestion($('#newFileName').val(), -1, null);
+			});
+			
+
+
+			// --------------------------- functions
+			function loadQueue() {
+				$.ajax({
+					type: 'GET',
+					url: basePathBackend + '/queue',
+					success: function(fileNames){
+						unencryptedFilesElm.empty();
+						
+						if (fileNames.length == 0) {
+							unencryptedFilesElm.text('keine vorhanden');
+						} else {
+							$.each(fileNames, function(i, fileName) {
+								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+									.append(fileName);
+									
+								elm.click(function() {
+									chooseFile(fileName);
+								});
+								
+								unencryptedFilesElm.append(elm);
+							});
+						}
+					}
+				});
+			}
+			
+			function chooseFile(fileName) {
+				chosenUnencryptedFile = fileName;
+				
+				if (fileName != null) {
+					chosenUnencryptedFileElm.text(fileName);
+					newFileNameElm.val(fileName);
+				} else {
+					chosenUnencryptedFileElm.empty();
+					newFileNameElm.val('');
+				}
+			}
+
+			function chooseSubdirectory(directoryName) {
+				chosenDirectory = directoryName;
+				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
+				$('#directoryNamePattern').val('');
+				$('#filenamesuggestionchangedmessage').hide();
+				loadSubdirectories(directoryName, 1);
+				loadNewFileNameSuggestions(directoryName);
+			}
+			
+			function loadSubdirectories(parentDirectoryName, depth, directoryNamePattern) {
+				$.ajax({
+					type: 'GET',
+					url: basePathBackend + '/archive/' + encodeURIComponent(parentDirectoryName) + '/directory?depth=' + encodeURIComponent(depth) + '&' + (directoryNamePattern ? 'pattern=' + encodeURIComponent(directoryNamePattern) : ''),
+					success: function(fullDirectoryNames){
+						directoriesElm.empty();
+						var fullDirectoryNamesGroupedByShortDirectoryNames = {};
+						
+						// make sure that directory captions are unambiguous
+						$.each(fullDirectoryNames, function(i, fullDirectoryName) {
+							var shortDirectoryName = fullDirectoryName.split('/').pop();
+							
+							if (!fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName]) {
+								fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName] = new Array();
+							} 
+							
+							fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName].push(fullDirectoryName);
+						});
+						
+						// add directories to ui
+						$.each(fullDirectoryNamesGroupedByShortDirectoryNames, function(shortDirectoryName, fullDirectoryNamesGroupedByShortDirectoryName) {
+							var fullNameAsCaption = (fullDirectoryNamesGroupedByShortDirectoryName.length > 1);
+							
+							$.each(fullDirectoryNamesGroupedByShortDirectoryName, function(j, fullDirectoryName) {
+								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+									.append(fullNameAsCaption ? shortDirectoryName + " <small>(in " + fullDirectoryName.replace(shortDirectoryName, "") + ")</small>" : shortDirectoryName);
+								
+								elm.click(function() {
+									chooseSubdirectory(fullDirectoryName);
+									return false;
+								});
+								
+								directoriesElm.append(elm);
+							});			
+						});
+					}
+				});
+			}
+			
+			function loadNewFileNameSuggestions(directoryName) {
+				$.ajax({
+					type: 'GET',
+					url: basePathBackend + '/archive/' + encodeURIComponent(directoryName) + '/file',
+					success: function(fileNames){
+						newFileNameSuggestionsElm.empty();
+						
+						if (fileNames.length > 0) {
+							$.each(fileNames, function(i, fileName) {
+								var caption = (fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName;
+								var elm = $('<a class="dropdown-item" />')
+									.append(caption);
+								
+								elm.click(function() {
+									var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
+									pickFileNameSuggestion(fileNameWithoutExtension, 0, new Date());
+								});
+								
+								newFileNameSuggestionsElm.append(elm);
+							});
+							newFileNameSuggestionsContainerElm.show();
+						} else {
+							newFileNameSuggestionsContainerElm.hide();
+						}
+					}
+				});
+			}
+			
+			function twoDigits(i) {
+				return ((parseInt(i) < 10) ? "0" : "") + i;
+			}
+			
+			function pickFileNameSuggestion(fileNameWithoutExtension, delta, referenceDate) {
+				var suggestedName = fileNameWithoutExtension;
+				var replaceBy = false;
+				
+				// some magic to improve the suggestions
+				let parsedReferenceDate;
+				
+				// yyyy-mm-dd
+				var regex = /2[0-9]{3}\-(0[1-9]|1[0-9])\-(0[1-9]|1[0-9]|2[0-9]|3[0-1])/;
+				if ((parsedReferenceDate = regex.exec(fileNameWithoutExtension)) !== null) {
+					let referenceDateParts = referenceDate ? [referenceDate.getFullYear(), referenceDate.getMonth() + 1, referenceDate.getDate()] : parsedReferenceDate[0].split("-");
+					var r = new Date(parseInt(referenceDateParts[0]), parseInt(referenceDateParts[1]) - 1, parseInt(referenceDateParts[2]) + delta);
+					var replaceBy = r.getFullYear() + "-" + twoDigits(r.getMonth() + 1) + "-" + twoDigits(r.getDate());
+					suggestedName = fileNameWithoutExtension.replace(regex, replaceBy);
+				} else {
+
+					// yyyy-mm
+					var regex = /2[0-9]{3}\-(0[1-9]|1[0-9])/;
+					if ((parsedReferenceDate = regex.exec(fileNameWithoutExtension)) !== null) {
+						let referenceDateParts = referenceDate ? [referenceDate.getFullYear(), referenceDate.getMonth() + 1, 1] : parsedReferenceDate[0].split("-");
+						var r = new Date(parseInt(referenceDateParts[0]), parseInt(referenceDateParts[1]) - 1 + delta, 1);
+						var replaceBy = r.getFullYear() + "-" + twoDigits(r.getMonth() + 1);
+						suggestedName = fileNameWithoutExtension.replace(regex, replaceBy);
+					} else {
+
+						// yyyy
+						var regex = /2[0-9]{3}/;
+						if ((parsedReferenceDate = regex.exec(fileNameWithoutExtension)) !== null) {
+							let referenceDateParts = referenceDate ? [referenceDate.getFullYear(), 0, 1] : parsedReferenceDate[0].split("-");
+							var r = new Date(parseInt(referenceDateParts[0]) + delta, 0, 1);
+							var replaceBy = String(r.getFullYear());
+							suggestedName = fileNameWithoutExtension.replace(regex, replaceBy);
+						} 
+					}
+				}
+				
+				newFileNameElm.val(suggestedName);
+				
+				// auto-select what was replaced
+				if (replaceBy) {
+					newFileNameElm.focus();
+					newFileNameElm.get(0).selectionStart = suggestedName.indexOf(replaceBy);
+					newFileNameElm.get(0).selectionEnd = newFileNameElm.get(0).selectionStart + replaceBy.length;
+
+					$('#filenamesuggestionchangedmessage').show().delay(60000).slideUp();
+				}
+			}
+			
+			function identifyReferenceDate(s) {
+			
+			}
+			
+			function archive(fileName, destinationDirectory, newFileName) {
+				$.ajax({
+					type: 'PUT',
+					url: basePathBackend + '/queue/' + encodeURIComponent(fileName) + '?destination=' + encodeURIComponent(destinationDirectory) + '&newFileName=' + encodeURIComponent(newFileName),
+					success: function(){
+						$('#successmessage').show();
+						loadQueue();
+						chooseFile(null);
+					}, 
+					error: function() {
+						$('#errormessage').show();
+					}
+				});
+			}
+			
+			function logout() {
+				document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;domain=sintra;path=/";
+			}
+			
+		});
+		
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+		<a class="navbar-brand" href="/">Archiver</a>
+		
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="#" id="logout">Abmelden</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<main role="main" class="container">
+		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
+			Datei erfolgreich archiviert!
+		</div>
+
+		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
+			Fehler aufgetreten!
+		</div>
+
+		<strong>Zu verschlüsselnde Datei</strong>
+		<p id="chosenUnencryptedFile" class="lead">
+
+		</p>
+		
+		<div class="list-group" id="unencryptedFiles">
+		</div>
+
+		<div class="ml-1">&nbsp;</div>
+		
+		<strong>Zielverzeichnis</strong>
+		<p id="chosenDirectory" class="lead">
+
+		</p>
+
+		<form>
+			<div class="input-group mb-3">
+				<input type="text" class="form-control" id="directoryNamePattern" placeholder="Tippen, um Verzeichnisse zu filtern..." />
+			</div>
+		</form>
+		<div class="list-group">
+			<a href="#" class="list-group-item list-group-item-action" id="rootDirectorySelector">&#47;</a>
+			<div id="directories"></div>
+		</div>
+
+		<div class="ml-1">&nbsp;</div>
+
+		<p>
+			<strong>Dateiname</strong>
+		</p>
+		<div class="alert alert-info" role="alert" id="filenamesuggestionchangedmessage" style="display:none">
+			Zeitangabe im Dateinamen aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrement">&uarr;</a> <a href="javascript:void(0)" id="suggestedFileNameDecrement">&darr;</a>
+		</div>
+		<form>
+			<div class="input-group mb-3">
+				<div class="input-group-prepend" id="newFileNameSuggestionsContainer">
+					<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+					<div class="dropdown-menu" id="newFileNameSuggestions">
+					</div>
+				</div>
+				<input type="text" class="form-control" id="newFileName" placeholder="Neuer Dateiname" />
+				<div class="input-group-append">
+					<span class="input-group-text">.gpg</span>
+				</div>
+			</div>
+
+		</form>
+	
+		<a class="btn btn-primary" href="#" role="button" id="archive">Archivieren</a>
+		
+		<div class="ml-1">&nbsp;</div>
+	</main><!-- /.container -->
+</body>
+</html>
