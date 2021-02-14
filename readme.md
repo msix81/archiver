@@ -9,6 +9,7 @@ This is a web portal application to archive documents on a Synology device. Stan
 * Make sure you have installed Node8 on your Synology
 * Make sure to follow the dependencies mentioned in ``package.json``
 * Make sure to configure application in ``config.json``
+* Make sure you have installed gpg on your Synology and it's accessible from the command line typing ``gpg``
 
 ## Autostart
 Modify /usr/local/etc/rc.d:
