@@ -1,8 +1,9 @@
 # Archiver
 This is a web portal application to archive documents on a Synology device. Standard use case:
-* you scan your documents and letters with a scanner directly onto your Synology device (e.g. via FTPS)
-* you want to archive those files in a folder structure
-* you want to encrpyt those files with GPG for additional security
+1. you scan your documents and letters with a scanner directly onto your Synology device (e.g. via FTPS)
+2. you want to archive those files in a folder structure
+3. you want to encrpyt those files with GPG for additional security
+4. you want to do all of this using your smartphone device
 
 ## Setup
 * Make sure you have installed Node8 on your Synology
