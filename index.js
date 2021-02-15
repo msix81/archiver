@@ -18,7 +18,7 @@ function main () {
 	app.use(express.static('public'));
 
 	// startup
-	app.listen(config.port, () => console.log(`App listening at port ${port}`));
+	app.listen(config.port, () => console.log(`App listening at port ${config.port}`));
 }
 
 main();
