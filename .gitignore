@@ -1,5 +1,4 @@
 node_modules/
 package-lock.json
 archiver.log
-queue/
 config.js
