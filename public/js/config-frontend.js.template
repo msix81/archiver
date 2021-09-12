@@ -1,0 +1,9 @@
+
+// Object containing an assignment between
+// * regular expressions that will be tested against the unencrypted filename (as attributes) and 
+// * strings for the search pattern
+//
+// example: {'Invoice [0-9]*\.pdf': 'Folder XYZ'}
+let fileNamePatternToSubdirectoryPattern = {
+
+};

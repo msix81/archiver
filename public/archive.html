@@ -10,6 +10,7 @@
 	<script src="js/jquery.min.js"></script>
 	<script src="js/popper.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	<script src="js/config-frontend.js"></script>
 	<script type="text/javascript">
 		var basePathBackend = '';
 		var chosenUnencryptedFile = null;
@@ -93,12 +94,41 @@
 				if (fileName != null) {
 					chosenUnencryptedFileElm.text(fileName);
 					newFileNameElm.val(fileName);
+					
+					// auto-populate search pattern
+					let directoryNamePatternSuggestion = guessSearchPatternSuggestion(fileName);
+					if (directoryNamePatternSuggestion) {
+						$('#directoryNamePattern')
+							.val(directoryNamePatternSuggestion)
+							.trigger('input');
+					}
 				} else {
 					chosenUnencryptedFileElm.empty();
 					newFileNameElm.val('');
 				}
 			}
 
+			function guessSearchPatternSuggestion(unencryptedFileName) {
+				var matchingFileNamePattern;
+				
+				if (typeof fileNamePatternToSubdirectoryPattern !== 'undefined') {
+				
+					// iterate over all defined search patterns and find first match
+					if (Object.keys(fileNamePatternToSubdirectoryPattern).some(function(regexToTest){
+						if (new RegExp(regexToTest).test(unencryptedFileName)) {
+							matchingFileNamePattern = regexToTest;
+							return true;
+						} else {
+							return false;
+						}
+					})) {
+						return fileNamePatternToSubdirectoryPattern[matchingFileNamePattern];
+					} else {
+						return false;
+					}
+				}
+			}
+			
 			function chooseSubdirectory(directoryName) {
 				chosenDirectory = directoryName;
 				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
