@@ -54,10 +54,10 @@
 				}, 400);
 			});
 			$('#suggestedFileNameIncrement').click(function(evt) {
-				pickFileNameSuggestion($('#newFileName').val(), 1, null);
+				pickFileNameSuggestion(newFileNameElm.val(), 1, null);
 			});
 			$('#suggestedFileNameDecrement').click(function(evt) {
-				pickFileNameSuggestion($('#newFileName').val(), -1, null);
+				pickFileNameSuggestion(newFileNameElm.val(), -1, null);
 			});
 			
 
@@ -146,7 +146,6 @@
 				chosenDirectory = directoryName;
 				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
 				$('#directoryNamePattern').val('');
-				$('#filenamesuggestionchangedmessage').hide();
 				loadSubdirectories(directoryName, 1);
 				loadNewFileNameSuggestions(directoryName);
 			}
@@ -186,6 +185,13 @@
 								directoriesElm.append(elm);
 							});			
 						});
+						
+						// auto-click directory
+						if (fullDirectoryNames.length == 1) {
+							directoriesElm.children(0).trigger('click');
+							
+							$('#directoryautopickedmessage').show().delay(5000).slideUp();
+						}
 					}
 				});
 			}
@@ -270,10 +276,6 @@
 				}
 			}
 			
-			function identifyReferenceDate(s) {
-			
-			}
-			
 			function archive(fileName, destinationDirectory, newFileName) {
 				$.ajax({
 					type: 'PUT',
@@ -355,6 +357,9 @@
 		</p>
 		<div class="alert alert-info" role="alert" id="filenamesuggestionchangedmessage" style="display:none">
 			Zeitangabe im Dateinamen aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrement">&uarr;</a> <a href="javascript:void(0)" id="suggestedFileNameDecrement">&darr;</a>
+		</div>
+		<div class="alert alert-info" role="alert" id="directoryautopickedmessage" style="display:none">
+			Verzeichnis automatisch gewählt!
 		</div>
 		<form>
 			<div class="input-group mb-3">
