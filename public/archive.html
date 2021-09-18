@@ -93,14 +93,27 @@
 				
 				if (fileName != null) {
 					chosenUnencryptedFileElm.text(fileName);
-					newFileNameElm.val(fileName);
 					
-					// auto-populate search pattern
-					let directoryNamePatternSuggestion = guessSearchPatternSuggestion(fileName);
-					if (directoryNamePatternSuggestion) {
-						$('#directoryNamePattern')
-							.val(directoryNamePatternSuggestion)
-							.trigger('input');
+					// get suggestions for folder search pattern and filename
+					let suggestions = guessSearchPatternAndFilenameSuggestion(fileName);
+					
+					if (suggestions) {
+					
+						// auto-populate search pattern
+						if (suggestions.folder) {
+							$('#directoryNamePattern')
+								.val(suggestions.folder)
+								.trigger('input');
+						}
+						
+						// auto-populate filename
+						if (suggestions.filename) {
+							pickFileNameSuggestion(suggestions.filename, 0, new Date());
+						} else {
+							newFileNameElm.val(fileName);
+						}
+					} else {
+						newFileNameElm.val(fileName);
 					}
 				} else {
 					chosenUnencryptedFileElm.empty();
@@ -108,13 +121,13 @@
 				}
 			}
 
-			function guessSearchPatternSuggestion(unencryptedFileName) {
+			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
 				var matchingFileNamePattern;
 				
-				if (typeof fileNamePatternToSubdirectoryPattern !== 'undefined') {
+				if (typeof fileNamePatternToSuggestions !== 'undefined') {
 				
 					// iterate over all defined search patterns and find first match
-					if (Object.keys(fileNamePatternToSubdirectoryPattern).some(function(regexToTest){
+					if (Object.keys(fileNamePatternToSuggestions).some(function(regexToTest){
 						if (new RegExp(regexToTest).test(unencryptedFileName)) {
 							matchingFileNamePattern = regexToTest;
 							return true;
@@ -122,7 +135,7 @@
 							return false;
 						}
 					})) {
-						return fileNamePatternToSubdirectoryPattern[matchingFileNamePattern];
+						return fileNamePatternToSuggestions[matchingFileNamePattern];
 					} else {
 						return false;
 					}

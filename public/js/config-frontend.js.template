@@ -3,7 +3,7 @@
 // * regular expressions that will be tested against the unencrypted filename (as attributes) and 
 // * strings for the search pattern
 //
-// example: {'Invoice [0-9]*\.pdf': 'Folder XYZ'}
-let fileNamePatternToSubdirectoryPattern = {
+// example: {'Invoice [0-9]*\.pdf': {'folder': 'Folder XYZ', 'filename': 'abc.pdf'}}
+let fileNamePatternToSuggestions = {
 
 };
