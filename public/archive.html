@@ -50,7 +50,7 @@
 				clearTimeout(timer);
 				directoriesElm.empty().append('Verzeichnisse werden geladen...');
 				timer = setTimeout(function() {
-					loadSubdirectories(chosenDirectory, 25, $('#directoryNamePattern').val());
+					loadSubdirectories(chosenDirectory, 25, $('#directoryNamePattern').val(), true);
 				}, 400);
 			});
 			$('#suggestedFileNameIncrement').click(function(evt) {
@@ -96,7 +96,7 @@
 					
 					// get suggestions for folder search pattern and filename
 					let suggestions = guessSearchPatternAndFilenameSuggestion(fileName);
-					
+
 					if (suggestions) {
 					
 						// auto-populate search pattern
@@ -123,7 +123,7 @@
 
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
 				var matchingFileNamePattern;
-				
+
 				if (typeof fileNamePatternToSuggestions !== 'undefined') {
 				
 					// iterate over all defined search patterns and find first match
@@ -146,11 +146,11 @@
 				chosenDirectory = directoryName;
 				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
 				$('#directoryNamePattern').val('');
-				loadSubdirectories(directoryName, 1);
+				loadSubdirectories(directoryName, 1, null, false);
 				loadNewFileNameSuggestions(directoryName);
 			}
 			
-			function loadSubdirectories(parentDirectoryName, depth, directoryNamePattern) {
+			function loadSubdirectories(parentDirectoryName, depth, directoryNamePattern, autoOpenFirstSubdirectory) {
 				$.ajax({
 					type: 'GET',
 					url: basePathBackend + '/archive/' + encodeURIComponent(parentDirectoryName) + '/directory?depth=' + encodeURIComponent(depth) + '&' + (directoryNamePattern ? 'pattern=' + encodeURIComponent(directoryNamePattern) : ''),
@@ -187,7 +187,7 @@
 						});
 						
 						// auto-click directory
-						if (fullDirectoryNames.length == 1) {
+						if (autoOpenFirstSubdirectory && (fullDirectoryNames.length == 1)) {
 							directoriesElm.children(0).trigger('click');
 							
 							$('#directoryautopickedmessage').show().delay(5000).slideUp();
