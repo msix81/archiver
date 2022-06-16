@@ -108,12 +108,14 @@
 						
 						// auto-populate filename
 						if (suggestions.filename) {
-							pickFileNameSuggestion(suggestions.filename, 0, new Date());
+							newFileNameElm.val(suggestions.filename);
+							//pickFileNameSuggestion(suggestions.filename, 0, new Date());
 						} else {
 							newFileNameElm.val(fileName);
 						}
 					} else {
-						newFileNameElm.val(fileName);
+						pickFileNameSuggestion(fileName, 0, new Date())
+						//newFileNameElm.val(fileName);
 					}
 				} else {
 					chosenUnencryptedFileElm.empty();
@@ -138,24 +140,31 @@
 						}
 					})) {
 						var result = fileNamePatternToSuggestions[matchingFileNamePattern];
-					
-						// replace named groups...
-						if (matches && matches.groups) {
+						
+						// replace variables in filename and folder
+						if (matches) {
+						
+							// get unparsed suggestions
 							var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename;
 							var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder;
-							
-							Object.keys(matches.groups).forEach(group => {
+
+							// inject now into named groups
+							var now = new Date();
+							var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth()), 'now:date': twoDigits(now.getDate())}};
+						
+							Object.keys(replacePatternAndValues).forEach(pattern => {
 
 								// ...in filename
-								filenameSuggestion = filenameSuggestion.replaceAll('<' + group + '>', matches.groups[group]);
+								filenameSuggestion = filenameSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
 
 								// ...in search pattern
-								folderSuggestion = folderSuggestion.replaceAll('<' + group + '>', matches.groups[group]);
+								folderSuggestion = folderSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
 							});
 							
 							result.filename = filenameSuggestion;
 							result.folder = folderSuggestion;
 						}
+						
 						return result
 					} else {
 						return false;
