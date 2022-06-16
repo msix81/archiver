@@ -123,12 +123,13 @@
 
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
 				var matchingFileNamePattern;
-
+				var matches;
+				
 				if (typeof fileNamePatternToSuggestions !== 'undefined') {
 				
 					// iterate over all defined search patterns and find matches
 					if (Object.keys(fileNamePatternToSuggestions).some(function(regexToTest){
-						var matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName);
+						matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName);
 						if (matches && matches.length > 0) {
 							matchingFileNamePattern = regexToTest;
 							return true;
@@ -136,7 +137,26 @@
 							return false;
 						}
 					})) {
-						return fileNamePatternToSuggestions[matchingFileNamePattern];
+						var result = fileNamePatternToSuggestions[matchingFileNamePattern];
+					
+						// replace named groups...
+						if (matches && matches.groups) {
+							var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename;
+							var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder;
+							
+							Object.keys(matches.groups).forEach(group => {
+
+								// ...in filename
+								filenameSuggestion = filenameSuggestion.replaceAll('<' + group + '>', matches.groups[group]);
+
+								// ...in search pattern
+								folderSuggestion = folderSuggestion.replaceAll('<' + group + '>', matches.groups[group]);
+							});
+							
+							result.filename = filenameSuggestion;
+							result.folder = folderSuggestion;
+						}
+						return result
 					} else {
 						return false;
 					}
