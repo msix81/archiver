@@ -126,9 +126,10 @@
 
 				if (typeof fileNamePatternToSuggestions !== 'undefined') {
 				
-					// iterate over all defined search patterns and find first match
+					// iterate over all defined search patterns and find matches
 					if (Object.keys(fileNamePatternToSuggestions).some(function(regexToTest){
-						if (new RegExp(regexToTest).test(unencryptedFileName)) {
+						var matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName);
+						if (matches && matches.length > 0) {
 							matchingFileNamePattern = regexToTest;
 							return true;
 						} else {
