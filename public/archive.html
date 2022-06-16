@@ -53,16 +53,33 @@
 					loadSubdirectories(chosenDirectory, 25, $('#directoryNamePattern').val(), true);
 				}, 400);
 			});
-			$('#suggestedFileNameIncrement').click(function(evt) {
-				pickFileNameSuggestion(newFileNameElm.val(), 1, null);
+			$('#suggestedFileNameIncrementYear').click(function(evt) {
+				spinDate(1);
 			});
-			$('#suggestedFileNameDecrement').click(function(evt) {
-				pickFileNameSuggestion(newFileNameElm.val(), -1, null);
+			$('#suggestedFileNameDecrementYear').click(function(evt) {
+				spinDate(-1);
 			});
-			
-
+		
 
 			// --------------------------- functions
+			function spinDate(offset) {
+				let selectionStart = newFileNameElm.get(0).selectionStart;
+				let selectionEnd = newFileNameElm.get(0).selectionEnd;
+				let oldFileName = newFileNameElm.val();
+				let selectedText = oldFileName.substr(selectionStart, selectionEnd - selectionStart);
+				let selectedDate = new Date(Date.parse(selectedText));
+				if (selectedDate) {
+					let newDate = new Date(selectedDate);
+					let replaceBy = selectedText;
+					switch (selectedText.length) {
+						case 4: newDate.setFullYear(selectedDate.getFullYear() + offset); replaceBy = newDate.getFullYear(); break;
+						case 7: newDate.setMonth(selectedDate.getMonth() + offset); replaceBy = newDate.getFullYear() + '-' + twoDigits(newDate.getMonth() + 1); break;
+						case 10: newDate.setDate(selectedDate.getDate() + offset); replaceBy = newDate.getFullYear() + '-' + twoDigits(newDate.getMonth() + 1) + '-' + twoDigits(newDate.getDate()); break;
+					}
+					newFileNameElm.val(oldFileName.substr(0, selectionStart) + replaceBy + oldFileName.substr(selectionEnd));
+				}
+			}
+			
 			function loadQueue() {
 				$.ajax({
 					type: 'GET',
@@ -115,27 +132,31 @@
 					}
 					
 					// auto-populate filename
-					if (suggestions.filename) {
-						newFileNameElm.val(suggestions.filename);
-
-						$('#filenamesuggestionchangedmessage').show().delay(3000).slideUp();
-						
-						// TODO: 
-						// auto-select what was replaced
-						// if (replaceBy) {
-						// 	newFileNameElm.focus();
-						// // 	newFileNameElm.get(0).selectionStart = suggestedName.indexOf(replaceBy);
-						// 	newFileNameElm.get(0).selectionEnd = newFileNameElm.get(0).selectionStart + replaceBy.length;
-						// }
-						//
-						// support +x, -x in now:variablen
-						//
-						// support up and down arrows if a date was recognized
-					} else {
-						newFileNameElm.val(fileName);
-					}
-				} else {
+					suggestFilename(suggestions);
+				}	else {
 					newFileNameElm.val(fileName);
+				}
+			}
+			
+			function suggestFilename(suggestions) {
+				
+				// auto-populate filename
+				if (suggestions && suggestions.filename) {
+					newFileNameElm.val(suggestions.filename);
+
+					$('#filenamesuggestionchangedmessage').show().delay(60000).slideUp();
+					
+					
+					
+					// TODO: 
+					// auto-select date
+					// if (replaceBy) {
+					// 	newFileNameElm.focus();
+					// // 	newFileNameElm.get(0).selectionStart = suggestedName.indexOf(replaceBy);
+					// 	newFileNameElm.get(0).selectionEnd = newFileNameElm.get(0).selectionStart + replaceBy.length;
+					// }
+					//
+					// support +x, -x in now:variablen
 				}
 			}
 
@@ -360,7 +381,7 @@
 			<strong>Dateiname</strong>
 		</p>
 		<div class="alert alert-info" role="alert" id="filenamesuggestionchangedmessage" style="display:none">
-			Dateiname durch Vorschlag aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrement">&uarr;</a> <a href="javascript:void(0)" id="suggestedFileNameDecrement">&darr;</a>
+			Dateiname durch Vorschlag aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrementYear">&uarr;</a> / <a href="javascript:void(0)" id="suggestedFileNameDecrementYear">&darr;</a>
 		</div>
 		<form>
 			<div class="input-group mb-3">
