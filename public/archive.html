@@ -93,33 +93,49 @@
 				
 				if (fileName != null) {
 					chosenUnencryptedFileElm.text(fileName);
-					
-					// get suggestions for folder search pattern and filename
-					let suggestions = guessSearchPatternAndFilenameSuggestion(fileName);
-
-					if (suggestions) {
-					
-						// auto-populate search pattern
-						if (suggestions.folder) {
-							$('#directoryNamePattern')
-								.val(suggestions.folder)
-								.trigger('input');
-						}
-						
-						// auto-populate filename
-						if (suggestions.filename) {
-							newFileNameElm.val(suggestions.filename);
-							//pickFileNameSuggestion(suggestions.filename, 0, new Date());
-						} else {
-							newFileNameElm.val(fileName);
-						}
-					} else {
-						pickFileNameSuggestion(fileName, 0, new Date())
-						//newFileNameElm.val(fileName);
-					}
+					suggestSearchPatternAndFilename(fileName);
 				} else {
 					chosenUnencryptedFileElm.empty();
 					newFileNameElm.val('');
+				}
+			}
+			
+			function suggestSearchPatternAndFilename(fileName) {
+				
+				// get suggestions for folder search pattern and filename
+				let suggestions = guessSearchPatternAndFilenameSuggestion(fileName);
+
+				if (suggestions) {
+				
+					// auto-populate search pattern
+					if (suggestions.folder) {
+						$('#directoryNamePattern')
+							.val(suggestions.folder)
+							.trigger('input');
+					}
+					
+					// auto-populate filename
+					if (suggestions.filename) {
+						newFileNameElm.val(suggestions.filename);
+
+						$('#filenamesuggestionchangedmessage').show().delay(3000).slideUp();
+						
+						// TODO: 
+						// auto-select what was replaced
+						// if (replaceBy) {
+						// 	newFileNameElm.focus();
+						// // 	newFileNameElm.get(0).selectionStart = suggestedName.indexOf(replaceBy);
+						// 	newFileNameElm.get(0).selectionEnd = newFileNameElm.get(0).selectionStart + replaceBy.length;
+						// }
+						//
+						// support +x, -x in now:variablen
+						//
+						// support up and down arrows if a date was recognized
+					} else {
+						newFileNameElm.val(fileName);
+					}
+				} else {
+					newFileNameElm.val(fileName);
 				}
 			}
 
@@ -145,13 +161,13 @@
 						if (matches) {
 						
 							// get unparsed suggestions
-							var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename;
-							var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder;
+							var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename ? fileNamePatternToSuggestions[matchingFileNamePattern].filename : '';
+							var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder ? fileNamePatternToSuggestions[matchingFileNamePattern].folder : '';
 
 							// inject now into named groups
 							var now = new Date();
-							var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth()), 'now:date': twoDigits(now.getDate())}};
-						
+							var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:date': twoDigits(now.getDate())}};
+
 							Object.keys(replacePatternAndValues).forEach(pattern => {
 
 								// ...in filename
@@ -177,7 +193,7 @@
 				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
 				$('#directoryNamePattern').val('');
 				loadSubdirectories(directoryName, 1, null, false);
-				loadNewFileNameSuggestions(directoryName);
+				loadExistingFileNamesAsSuggestions(directoryName);
 			}
 			
 			function loadSubdirectories(parentDirectoryName, depth, directoryNamePattern, autoOpenFirstSubdirectory) {
@@ -226,7 +242,7 @@
 				});
 			}
 			
-			function loadNewFileNameSuggestions(directoryName) {
+			function loadExistingFileNamesAsSuggestions(directoryName) {
 				$.ajax({
 					type: 'GET',
 					url: basePathBackend + '/archive/' + encodeURIComponent(directoryName) + '/file',
@@ -241,7 +257,7 @@
 								
 								elm.click(function() {
 									var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
-									pickFileNameSuggestion(fileNameWithoutExtension, 0, new Date());
+									suggestSearchPatternAndFilename(fileNameWithoutExtension);
 								});
 								
 								newFileNameSuggestionsElm.append(elm);
@@ -256,54 +272,6 @@
 			
 			function twoDigits(i) {
 				return ((parseInt(i) < 10) ? "0" : "") + i;
-			}
-			
-			function pickFileNameSuggestion(fileNameWithoutExtension, delta, referenceDate) {
-				var suggestedName = fileNameWithoutExtension;
-				var replaceBy = false;
-				
-				// some magic to improve the suggestions
-				let parsedReferenceDate;
-				
-				// yyyy-mm-dd
-				var regex = /2[0-9]{3}\-(0[1-9]|1[0-9])\-(0[1-9]|1[0-9]|2[0-9]|3[0-1])/;
-				if ((parsedReferenceDate = regex.exec(fileNameWithoutExtension)) !== null) {
-					let referenceDateParts = referenceDate ? [referenceDate.getFullYear(), referenceDate.getMonth() + 1, referenceDate.getDate()] : parsedReferenceDate[0].split("-");
-					var r = new Date(parseInt(referenceDateParts[0]), parseInt(referenceDateParts[1]) - 1, parseInt(referenceDateParts[2]) + delta);
-					var replaceBy = r.getFullYear() + "-" + twoDigits(r.getMonth() + 1) + "-" + twoDigits(r.getDate());
-					suggestedName = fileNameWithoutExtension.replace(regex, replaceBy);
-				} else {
-
-					// yyyy-mm
-					var regex = /2[0-9]{3}\-(0[1-9]|1[0-9])/;
-					if ((parsedReferenceDate = regex.exec(fileNameWithoutExtension)) !== null) {
-						let referenceDateParts = referenceDate ? [referenceDate.getFullYear(), referenceDate.getMonth() + 1, 1] : parsedReferenceDate[0].split("-");
-						var r = new Date(parseInt(referenceDateParts[0]), parseInt(referenceDateParts[1]) - 1 + delta, 1);
-						var replaceBy = r.getFullYear() + "-" + twoDigits(r.getMonth() + 1);
-						suggestedName = fileNameWithoutExtension.replace(regex, replaceBy);
-					} else {
-
-						// yyyy
-						var regex = /2[0-9]{3}/;
-						if ((parsedReferenceDate = regex.exec(fileNameWithoutExtension)) !== null) {
-							let referenceDateParts = referenceDate ? [referenceDate.getFullYear(), 0, 1] : parsedReferenceDate[0].split("-");
-							var r = new Date(parseInt(referenceDateParts[0]) + delta, 0, 1);
-							var replaceBy = String(r.getFullYear());
-							suggestedName = fileNameWithoutExtension.replace(regex, replaceBy);
-						} 
-					}
-				}
-				
-				newFileNameElm.val(suggestedName);
-				
-				// auto-select what was replaced
-				if (replaceBy) {
-					newFileNameElm.focus();
-					newFileNameElm.get(0).selectionStart = suggestedName.indexOf(replaceBy);
-					newFileNameElm.get(0).selectionEnd = newFileNameElm.get(0).selectionStart + replaceBy.length;
-
-					$('#filenamesuggestionchangedmessage').show().delay(60000).slideUp();
-				}
 			}
 			
 			function archive(fileName, destinationDirectory, newFileName) {
@@ -365,7 +333,13 @@
 
 		<div class="ml-1">&nbsp;</div>
 		
-		<strong>Zielverzeichnis</strong>
+		<p>
+			<strong>Zielverzeichnis</strong>
+		</p>
+		<div class="alert alert-info" role="alert" id="directoryautopickedmessage" style="display:none">
+			Verzeichnis automatisch gewählt!
+		</div>
+
 		<p id="chosenDirectory" class="lead">
 
 		</p>
@@ -386,10 +360,7 @@
 			<strong>Dateiname</strong>
 		</p>
 		<div class="alert alert-info" role="alert" id="filenamesuggestionchangedmessage" style="display:none">
-			Zeitangabe im Dateinamen aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrement">&uarr;</a> <a href="javascript:void(0)" id="suggestedFileNameDecrement">&darr;</a>
-		</div>
-		<div class="alert alert-info" role="alert" id="directoryautopickedmessage" style="display:none">
-			Verzeichnis automatisch gewählt!
+			Dateiname durch Vorschlag aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrement">&uarr;</a> <a href="javascript:void(0)" id="suggestedFileNameDecrement">&darr;</a>
 		</div>
 		<form>
 			<div class="input-group mb-3">
