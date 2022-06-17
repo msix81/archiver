@@ -155,52 +155,40 @@
 			}
 
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
-				var matchingFileNamePattern;
-				var matches;
+				var matches = false;
 
 				if (typeof fileNamePatternToSuggestions !== 'undefined') {
 				
-					// iterate over all defined search patterns and find matches
-					if (Object.keys(fileNamePatternToSuggestions).some(function(regexToTest){
-						matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName);
-						if (matches && matches.length > 0) {
-							matchingFileNamePattern = regexToTest;
-							return true;
-						} else {
-							return false;
-						}
-					})) {
-						let result = {...fileNamePatternToSuggestions[matchingFileNamePattern]};
+					// find first matching search pattern
+					var matchingFileNamePattern = Object.keys(fileNamePatternToSuggestions).find(function(regexToTest) {matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
+					
+					if (matchingFileNamePattern){
+						var result = {...fileNamePatternToSuggestions[matchingFileNamePattern]};
+	
+						// get unparsed suggestions
+						var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename ? fileNamePatternToSuggestions[matchingFileNamePattern].filename : '';
+						var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder ? fileNamePatternToSuggestions[matchingFileNamePattern].folder : '';
 
-						// replace variables in filename and folder
-						if (matches) {
+						// inject now into named groups
+						var now = new Date();
+						var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:date': twoDigits(now.getDate())}};
+
+						Object.keys(replacePatternAndValues).forEach(pattern => {
+
+							// ...in filename
+							filenameSuggestion = filenameSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
+
+							// ...in search pattern
+							folderSuggestion = folderSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
+						});
 						
-							// get unparsed suggestions
-							var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename ? fileNamePatternToSuggestions[matchingFileNamePattern].filename : '';
-							var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder ? fileNamePatternToSuggestions[matchingFileNamePattern].folder : '';
-
-							// inject now into named groups
-							var now = new Date();
-							var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:date': twoDigits(now.getDate())}};
-
-							Object.keys(replacePatternAndValues).forEach(pattern => {
-
-								// ...in filename
-								filenameSuggestion = filenameSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
-
-								// ...in search pattern
-								folderSuggestion = folderSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
-							});
-							
-							result.filename = filenameSuggestion;
-							result.folder = folderSuggestion;
-						}
+						result.filename = filenameSuggestion;
+						result.folder = folderSuggestion;
 
 						return result;
-					} else {
-						return false;
 					}
 				}
+				return false;
 			}
 			
 			function chooseSubdirectory(directoryName) {
