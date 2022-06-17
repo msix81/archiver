@@ -157,7 +157,7 @@
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
 				var matchingFileNamePattern;
 				var matches;
-				
+
 				if (typeof fileNamePatternToSuggestions !== 'undefined') {
 				
 					// iterate over all defined search patterns and find matches
@@ -170,8 +170,8 @@
 							return false;
 						}
 					})) {
-						var result = fileNamePatternToSuggestions[matchingFileNamePattern];
-						
+						let result = {...fileNamePatternToSuggestions[matchingFileNamePattern]};
+
 						// replace variables in filename and folder
 						if (matches) {
 						
@@ -195,8 +195,8 @@
 							result.filename = filenameSuggestion;
 							result.folder = folderSuggestion;
 						}
-						
-						return result
+
+						return result;
 					} else {
 						return false;
 					}
