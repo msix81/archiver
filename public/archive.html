@@ -54,10 +54,10 @@
 					loadSubdirectories(chosenDirectory, 25, directoryNamePatternElm.val(), true);
 				}, 400);
 			});
-			$('#suggestedFileNameIncrementYear').click(function(evt) {
+			$('#suggestedFileNameDateInc').click(function(evt) {
 				spinDate(1);
 			});
-			$('#suggestedFileNameDecrementYear').click(function(evt) {
+			$('#suggestedFileNameDateDec').click(function(evt) {
 				spinDate(-1);
 			});
 		
@@ -146,14 +146,18 @@
 					}
 				}	else {
 					newFileNameElm.val(fileName);
+					$('#suggestedFileNameDateSpin').hide();
 				}
 			}
 			
 			function autoSelectDate(elm) {
 				if (re = new RegExp('(?<full>2[0-9]{3}(\-(?<mm>0[1-9]|1[0-9])){0,1}(\-(?<dd>0[1-9]|1[0-9]|2[0-9]|3[0-1])){0,1})', 'gm').exec(elm.val())) {
+					$('#suggestedFileNameDateSpin').show();
 					elm.focus();
 					elm.get(0).selectionStart = re.index;
 					elm.get(0).selectionEnd = re.index + re.groups.full.length;
+				} else {
+					$('#suggestedFileNameDateSpin').hide();
 				};
 			}
 
@@ -372,6 +376,11 @@
 					<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
 					<div class="dropdown-menu" id="newFileNameSuggestions">
 					</div>
+				</div>
+				<div class="input-group-prepend" id="suggestedFileNameDateSpin" style="display:none">
+					<span class="input-group-text">&#x1F4C5; &nbsp;
+					<a href="javascript:void(0);" id="suggestedFileNameDateInc">&uarr;</a>&nbsp;
+					<a href="javascript:void(0);" id="suggestedFileNameDateDec">&darr;</a>
 				</div>
 				<input type="text" class="form-control glowable" id="newFileName" placeholder="Neuer Dateiname" />
 				<div class="input-group-append">
