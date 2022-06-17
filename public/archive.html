@@ -20,6 +20,7 @@
 		$(document).ready(function() {
 			var unencryptedFilesElm = $('#unencryptedFiles');
 			var directoriesElm = $('#directories');
+			var directoryNamePatternElm = $('#directoryNamePattern');
 			var newFileNameSuggestionsElm = $('#newFileNameSuggestions');
 			var newFileNameSuggestionsContainerElm = $('#newFileNameSuggestionsContainer');
 			var newFileNameElm = $('#newFileName');
@@ -46,11 +47,11 @@
 				logout();
 				location.href = '/';
 			});
-			$('#directoryNamePattern').on('input', function() {
+			directoryNamePatternElm.on('input', function() {
 				clearTimeout(timer);
 				directoriesElm.empty().append('Verzeichnisse werden geladen...');
 				timer = setTimeout(function() {
-					loadSubdirectories(chosenDirectory, 25, $('#directoryNamePattern').val(), true);
+					loadSubdirectories(chosenDirectory, 25, directoryNamePatternElm.val(), true);
 				}, 400);
 			});
 			$('#suggestedFileNameIncrementYear').click(function(evt) {
@@ -127,9 +128,11 @@
 				
 					// auto-populate search pattern
 					if (suggestions.folder) {
-						$('#directoryNamePattern')
+						directoryNamePatternElm
 							.val(suggestions.folder)
 							.trigger('input');
+							
+						makeGlow(directoryNamePatternElm);
 					}
 					
 					// auto-populate filename
@@ -139,7 +142,7 @@
 						// auto-select date in suggestion
 						autoSelectDate(newFileNameElm);
 						
-						$('#filenamesuggestionchangedmessage').show().delay(60000).slideUp();
+						makeGlow(newFileNameElm);
 					}
 				}	else {
 					newFileNameElm.val(fileName);
@@ -194,7 +197,7 @@
 			function chooseSubdirectory(directoryName) {
 				chosenDirectory = directoryName;
 				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
-				$('#directoryNamePattern').val('');
+				directoryNamePatternElm.val('');
 				loadSubdirectories(directoryName, 1, null, false);
 				loadExistingFileNamesAsSuggestions(directoryName);
 			}
@@ -239,10 +242,15 @@
 						if (autoOpenFirstSubdirectory && (fullDirectoryNames.length == 1)) {
 							directoriesElm.children(0).trigger('click');
 							
-							$('#directoryautopickedmessage').show().delay(5000).slideUp();
+							makeGlow($('#chosenDirectory'));
 						}
 					}
 				});
+			}
+			
+			function makeGlow(elm) {
+				elm.addClass('glowing');
+				window.setTimeout(function() { elm.removeClass('glowing'); }, 4000);
 			}
 			
 			function loadExistingFileNamesAsSuggestions(directoryName) {
@@ -339,17 +347,13 @@
 		<p>
 			<strong>Zielverzeichnis</strong>
 		</p>
-		<div class="alert alert-info" role="alert" id="directoryautopickedmessage" style="display:none">
-			Verzeichnis automatisch gewählt!
-		</div>
-
-		<p id="chosenDirectory" class="lead">
+		<p id="chosenDirectory" class="lead glowable">
 
 		</p>
 
 		<form>
 			<div class="input-group mb-3">
-				<input type="text" class="form-control" id="directoryNamePattern" placeholder="Tippen, um Verzeichnisse zu filtern..." />
+				<input type="text" class="form-control glowable" id="directoryNamePattern" placeholder="Tippen, um Verzeichnisse zu filtern..." />
 			</div>
 		</form>
 		<div class="list-group">
@@ -362,9 +366,6 @@
 		<p>
 			<strong>Dateiname</strong>
 		</p>
-		<div class="alert alert-info" role="alert" id="filenamesuggestionchangedmessage" style="display:none">
-			Dateiname durch Vorschlag aktualisiert! <a href="javascript:void(0)" id="suggestedFileNameIncrementYear">&uarr;</a> / <a href="javascript:void(0)" id="suggestedFileNameDecrementYear">&darr;</a>
-		</div>
 		<form>
 			<div class="input-group mb-3">
 				<div class="input-group-prepend" id="newFileNameSuggestionsContainer">
@@ -372,7 +373,7 @@
 					<div class="dropdown-menu" id="newFileNameSuggestions">
 					</div>
 				</div>
-				<input type="text" class="form-control" id="newFileName" placeholder="Neuer Dateiname" />
+				<input type="text" class="form-control glowable" id="newFileName" placeholder="Neuer Dateiname" />
 				<div class="input-group-append">
 					<span class="input-group-text">.gpg</span>
 				</div>
