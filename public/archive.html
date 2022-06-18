@@ -98,8 +98,9 @@
 							unencryptedFilesElm.text('keine vorhanden');
 						} else {
 							$.each(fileNames, function(i, fileName) {
+								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
-									.append(fileName);
+									.append(caption);
 									
 								elm.click(function() {
 									chooseFile(fileName);
@@ -274,8 +275,9 @@
 						
 						if (fileNames.length > 0) {
 							$.each(fileNames, function(i, fileName) {
-								var caption = '&#9657; <small>' + ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName) + '</small>';
+								var caption = '&#9657; ' + ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+									.append('<small/>')
 									.append(caption);
 								
 								elm.click(function() {
