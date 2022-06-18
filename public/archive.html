@@ -26,7 +26,6 @@
 			var newFileNameSuggestionsLinkElm = $('#newFileNameSuggestionsLink');
 			var newFileNameElm = $('#newFileName');
 			var rootDirectorySelectorElm = $('#rootDirectorySelector');
-			var chosenUnencryptedFileElm = $('#chosenUnencryptedFile');
 			var suggestedFileNameDateSpinElm = $('#suggestedFileNameDateSpin');
 			
 			loadQueue();
@@ -113,6 +112,9 @@
 									
 								elm.click(function() {
 									chooseFile(fileName);
+									elm.html(fileName.replace(/.{40}/g, "$&" + "<br />"));
+									unencryptedFilesElm.children().removeClass('active');
+									elm.addClass('active');
 								});
 								
 								unencryptedFilesElm.append(elm);
@@ -126,10 +128,8 @@
 				chosenUnencryptedFile = fileName;
 				
 				if (fileName != null) {
-					chosenUnencryptedFileElm.text(fileName);
 					suggestSearchPatternAndFilename(fileName);
 				} else {
-					chosenUnencryptedFileElm.empty();
 					newFileNameElm.val('');
 				}
 				
@@ -361,9 +361,9 @@
 			Fehler aufgetreten!
 		</div>
 
-		<strong>Zu verschlüsselnde Datei</strong>
-		<p id="chosenUnencryptedFile" class="lead">
-
+		
+		<p>
+			<strong>Zu verschlüsselnde Datei</strong>
 		</p>
 		
 		<div class="list-group" id="unencryptedFiles">
