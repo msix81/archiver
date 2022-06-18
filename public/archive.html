@@ -22,7 +22,7 @@
 			var directoriesElm = $('#directories');
 			var directoryNamePatternElm = $('#directoryNamePattern');
 			var newFileNameSuggestionsElm = $('#newFileNameSuggestions');
-			var newFileNameSuggestionsContainerElm = $('#newFileNameSuggestionsContainer');
+			var newFileNameSuggestionsLinkElm = $('#newFileNameSuggestionsLink');
 			var newFileNameElm = $('#newFileName');
 			var rootDirectorySelectorElm = $('#rootDirectorySelector');
 			var chosenUnencryptedFileElm = $('#chosenUnencryptedFile');
@@ -60,6 +60,11 @@
 			$('#suggestedFileNameDateDec').click(function(evt) {
 				spinDate(-1);
 			});
+			newFileNameSuggestionsLinkElm.click(function(evt) {
+				newFileNameSuggestionsElm.slideToggle();
+			});
+			
+			
 		
 
 			// --------------------------- functions
@@ -258,6 +263,9 @@
 			}
 			
 			function loadExistingFileNamesAsSuggestions(directoryName) {
+				newFileNameSuggestionsElm.hide();
+				newFileNameSuggestionsLinkElm.hide();
+				
 				$.ajax({
 					type: 'GET',
 					url: basePathBackend + '/archive/' + encodeURIComponent(directoryName) + '/file',
@@ -266,20 +274,21 @@
 						
 						if (fileNames.length > 0) {
 							$.each(fileNames, function(i, fileName) {
-								var caption = (fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName;
-								var elm = $('<a class="dropdown-item" />')
+								var caption = '&#9657; <small>' + ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName) + '</small>';
+								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
 									.append(caption);
 								
 								elm.click(function() {
 									var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
 									suggestSearchPatternAndFilename(fileNameWithoutExtension);
+									newFileNameSuggestionsElm.slideUp();
 								});
 								
 								newFileNameSuggestionsElm.append(elm);
 							});
-							newFileNameSuggestionsContainerElm.show();
+							newFileNameSuggestionsLinkElm.show();
 						} else {
-							newFileNameSuggestionsContainerElm.hide();
+							newFileNameSuggestionsLinkElm.hide();
 						}
 					}
 				});
@@ -368,24 +377,21 @@
 		<div class="ml-1">&nbsp;</div>
 
 		<p>
-			<strong>Dateiname</strong>
+			<strong>Dateiname</strong> <small><a href="javascript:void(0);" id ="newFileNameSuggestionsLink">Existierende als Vorlage &#9660;</a></small>
 		</p>
+		
+		<div class="list-group" id="newFileNameSuggestions">
+			
+		</div>
+
 		<form>
 			<div class="input-group mb-3">
-				<div class="input-group-prepend" id="newFileNameSuggestionsContainer">
-					<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-					<div class="dropdown-menu" id="newFileNameSuggestions">
-					</div>
-				</div>
 				<div class="input-group-prepend" id="suggestedFileNameDateSpin" style="display:none">
 					<span class="input-group-text">&#x1F4C5; &nbsp;
 					<a href="javascript:void(0);" id="suggestedFileNameDateInc">&uarr;</a>&nbsp;
 					<a href="javascript:void(0);" id="suggestedFileNameDateDec">&darr;</a>
 				</div>
 				<input type="text" class="form-control glowable" id="newFileName" placeholder="Neuer Dateiname" />
-				<div class="input-group-append">
-					<span class="input-group-text">.gpg</span>
-				</div>
 			</div>
 
 		</form>
