@@ -195,7 +195,7 @@
 
 						// inject now into named groups
 						var now = new Date();
-						var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:date': twoDigits(now.getDate())}};
+						var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:month-1': twoDigits(now.getMonth() + 1 - 1), 'now:date': twoDigits(now.getDate())}};
 
 						Object.keys(replacePatternAndValues).forEach(pattern => {
 

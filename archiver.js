@@ -59,7 +59,7 @@ let putQueueFile = (req, res) => {
 				if (err) {
 					console.log('destinationFileName does not exist yet');
 					
-					var escapedFileName = escapeShellArg(path.join(queueDirectory, fileName));
+					var escapedFileName = escapeShellArg(path.join(queueDirectory, fileName));					
 					const gpg = exec('sudo -u ' + config.synologyAdminUserName + ' -E gpg -r ' + config.gpgPublicKeyId + ' --always-trust --encrypt ' + escapedFileName + '', function(err) {
 						if (err) {
 							res.status(500).send('error executing gpg ' + err);
