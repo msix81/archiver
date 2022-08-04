@@ -3,8 +3,8 @@ const path = require('path');
 const config = require('./config.js');
 const { exec } = require('child_process');
 
-const destinationRootDirectory = path.join(__dirname, '..', config.documentFolderName);
-const queueDirectory = path.join(__dirname, config.queueFolderName);
+const destinationRootDirectory = config.documentFolderName;
+const queueDirectory = config.queueFolderName;
 const directoryBlacklist = config.directoryBlacklist;
 
 // getQueueFileCollection
