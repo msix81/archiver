@@ -39,7 +39,7 @@
 					if (token) {
 						var expirationDate = new Date();
 						expirationDate.setMonth(expirationDate.getMonth() + 12);
-						document.cookie = "token=" + token + ";expires=" + expirationDate + ";domain=sintra;path=/";
+						document.cookie = "token=" + token + ";expires=" + expirationDate + ";path=/";
 						location.href = 'archive.html';
 					}
 				}).fail(function(){
