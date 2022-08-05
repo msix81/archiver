@@ -60,7 +60,7 @@ let putQueueFile = (req, res) => {
 					console.log('destinationFileName does not exist yet');
 					
 					var escapedFileName = escapeShellArg(path.join(queueDirectory, fileName));					
-					const gpg = exec('sudo -u ' + config.synologyAdminUserName + ' -E gpg -r ' + config.gpgPublicKeyId + ' --always-trust --encrypt ' + escapedFileName + '', function(err) {
+					const gpg = exec('gpg -r ' + config.gpgPublicKeyId + ' --always-trust --encrypt ' + escapedFileName + '', function(err) {
 						if (err) {
 							res.status(500).send('error executing gpg ' + err);
 						} else {
@@ -69,6 +69,7 @@ let putQueueFile = (req, res) => {
 							// move encrypted file
 							fs.rename(queueFileNameEncrypted, destinationFileName, function (err) {
 								if (err) {
+									console.log(err);
 									res.status(500).send('error on moving file');
 									
 									fs.unlink(queueFileNameEncrypted, function (err) {
@@ -169,5 +170,5 @@ exports.getArchiveFileCollection = getArchiveFileCollection;
 exports.putQueueFile = putQueueFile;
 
 function escapeShellArg (arg) {
-	return `'${arg.replace(/'/g, `'\\''`)}'`;
+	return `"${arg.replace(/'/g, `'\\''`)}"`;
 }

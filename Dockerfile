@@ -8,13 +8,20 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
+# install npm
 RUN npm install
 # If you are building your code for production
 # RUN npm ci --only=production
 
+# install gpg if not already included
+#RUN apt-get update && apt-get install gnupg
+
 # Bundle app source
 COPY . .
 
-EXPOSE 7653
+# install public key
+RUN gpg --import public-key.gpg
+
+EXPOSE 8080:8080
 
 CMD [ "node", "index.js" ]
