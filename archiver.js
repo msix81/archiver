@@ -67,7 +67,7 @@ let putQueueFile = (req, res) => {
 							console.log('gpg executed');
 
 							// move encrypted file
-							fs.rename(queueFileNameEncrypted, destinationFileName, function (err) {
+							move(queueFileNameEncrypted, destinationFileName, function (err) {
 								if (err) {
 									console.log(err);
 									res.status(500).send('error on moving file');
@@ -142,7 +142,6 @@ function filewalker(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, 
 
 			fs.stat(fullFile, function(err, stat){
 				if (stat && ((returnDirectories && stat.isDirectory()) || (returnFiles && !stat.isDirectory()))) {
-					//console.log(directoryNamePattern.toLowerCase());
 					if ((!directoryNamePattern || (directoryNamePattern && file.toLowerCase().includes(directoryNamePattern.toLowerCase()))) && (true)) {
 						results.push(path.relative(baseDir, fullFile));
 					}
@@ -163,6 +162,39 @@ function filewalker(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, 
 	});
 };
 
+/**
+ * Replacement for fs.rename because it does not support renaming across different devices - which we may need.
+ * 
+ * @see https://stackoverflow.com/a/29105404
+ */
+function move(oldPath, newPath, callback) {
+
+    fs.rename(oldPath, newPath, function (err) {
+        if (err) {
+            if (err.code === 'EXDEV') {
+                copy();
+            } else {
+                callback(err);
+            }
+            return;
+        }
+        callback();
+    });
+
+    function copy() {
+        var readStream = fs.createReadStream(oldPath);
+        var writeStream = fs.createWriteStream(newPath);
+
+        readStream.on('error', callback);
+        writeStream.on('error', callback);
+
+        readStream.on('close', function () {
+            fs.unlink(oldPath, callback);
+        });
+
+        readStream.pipe(writeStream);
+    }
+}
 
 exports.getQueueFileCollection = getQueueFileCollection;
 exports.getArchiveDirectoryCollection = getArchiveDirectoryCollection;
