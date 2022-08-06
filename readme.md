@@ -25,6 +25,7 @@ docker run -d \
 	--env ARCHIVER_PASSWORD='desired-login-password' \
 	--env ARCHIVER_SECRET='put-a-secret-string-here' \
 	--env ARCHIVER_GPGPKID='id of the GPG public key you provided in the container' \
+	--restart unless-stopped \
 	<Docker Hub user>/archiver
 ```
 
