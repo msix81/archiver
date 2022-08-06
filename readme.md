@@ -11,11 +11,11 @@ Standard use case:
 1. Add your GPG public key into the Archiver directory using filename "public-key.gpg"
 2. Build the container (note you may need to adopt the "--platform" parameter inside the Dockerfile, depending on your target platform): 
 ```
-docker build . -t archiver
+docker build . -t <Docker Hub user>/archiver
 ```
 3. Push the container into your private Docker repo, e.g. Docker Hub:
 ```
-docker push archiver
+docker push <Docker Hub user>/archiver
 ```
 4. Start the container on your desired machine:
 ```
@@ -25,19 +25,21 @@ docker run -d \
 	--env ARCHIVER_PASSWORD='desired-login-password' \
 	--env ARCHIVER_SECRET='put-a-secret-string-here' \
 	--env ARCHIVER_GPGPKID='id of the GPG public key you provided in the container' \
-	archiver
+	<Docker Hub user>/archiver
 ```
 
-Because Archiver relies on regular mounts into the Docker container, you can use any input and output filesystem supported by your device. E.g. use the following commands to mount Synology SMB shares:
+Because Archiver relies on regular mounts into the Docker container, you can use any input and output filesystem supported by your device. E.g. use the following command to mount a Synology SMB share into your Raspberry:
 ```
 mount -t cifs -o vers=2.0,credentials=/home/pi/smbcredentials,uid=1000,gid=1000 //<SMB host>/<SMB folder> /home/pi/archiver-in
 ```
 
-A ``smbcredentials`` file looks as follows:
+A typical ``smbcredentials`` file looks as follows:
 ```
 username=<username>
 password=<password>
 ```
+
+Check out Archiver's ``config.js`` for more configuration options.
 
 ## Setup on Synology NAS directly (not recommended)
 * Make sure you have installed Node8 on your Synology
