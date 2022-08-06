@@ -55,8 +55,8 @@ cd <archiver directory>
 node index.js > archiver.log
 ```
 
-## How to access
+## How to access Archiver
 Open in a browser
 ```
-http://<your synology IP address>:<configured port, 8080 by default>/
+http://<your host's IP address>:<configured port, 8080 by default>/
 ```
