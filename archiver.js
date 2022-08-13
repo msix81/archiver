@@ -191,50 +191,6 @@ function filewalker(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, 
 		});
 	});
 };
-/**
- * Explores recursively a directory up tp a defined depth and returns all the folderpaths in the callback.
- * 
- * @see http://stackoverflow.com/a/5827895/4241030
- */
-function filewalkerNew(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, returnDirectories, done) {
-    let results = {};
-
-	fs.readdir(dir, function(err, list) {
-		if (err) return done(err);
-
-		var pending = list.length;
-
-		if ((!pending) || (levelToGo == 0)) return done(null, results);
-				
-		list.forEach(function(file){
-			let fullFile = path.resolve(dir, file);
-			fs.stat(fullFile, function(err, stat){
-				if (stat && ((returnDirectories && stat.isDirectory()) || (returnFiles && !stat.isDirectory()))) {
-					if ((!directoryNamePattern || (directoryNamePattern && file.toLowerCase().includes(directoryNamePattern.toLowerCase()))) && (true)) {
-						var relativeDir = dir.substr(dir.lastIndexOf("\\") + 1);
-						if (!results[relativeDir]) {
-							results[relativeDir] = {};
-						}
-						results[relativeDir][file] = false;
-					}
-
-					if (stat.isDirectory()) {
-						filewalker(fullFile, baseDir, levelToGo - 1, directoryNamePattern, returnFiles, returnDirectories, function(err, res){
-							if (Object.keys(res).length > 0) {
-								results[relativeDir] = {...results[relativeDir], ...res};
-							}
-							if (!--pending) done(null, results);
-						});
-					} else {
-						if (!--pending) done(null, results);
-					}
-				} else {
-					if (!--pending) done(null, results);
-				}
-			});
-		});
-	});
-};
 
 /**
  * Replacement for fs.rename because it does not support renaming across different devices - which we may need.
