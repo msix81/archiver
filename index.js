@@ -9,10 +9,11 @@ function main () {
 
 	// routes
 	app.post('/login', authenticator.login);
-	app.get('/archive/:directoryName/directory', authenticator.checkToken, archiver.getArchiveDirectoryCollection);
-	app.get('/archive/:directoryName/file', authenticator.checkToken, archiver.getArchiveFileCollection);
-	app.put('/queue/:fileName', authenticator.checkToken, archiver.putQueueFile);
-	app.get('/queue', authenticator.checkToken, archiver.getQueueFileCollection);
+	app.get('/archive/:directoryName/directory', authenticator.checkToken, archiver.getArchiveDirectoryCollectionService);
+	app.post('/archive/update-directory-cache', authenticator.checkToken, archiver.updateArchiveDirectoryCacheService);
+	app.get('/archive/:directoryName/file', authenticator.checkToken, archiver.getArchiveFileCollectionService);
+	app.put('/queue/:fileName', authenticator.checkToken, archiver.putQueueFileService);
+	app.get('/queue', authenticator.checkToken, archiver.getQueueFileCollectionService);
 
 	// embed frontend
 	app.use(express.static('public'));

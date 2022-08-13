@@ -7,8 +7,10 @@ const destinationRootDirectory = config.documentFolderName;
 const queueDirectory = config.queueFolderName;
 const directoryBlacklist = config.directoryBlacklist;
 
+let directoryCache = null;
+
 // getQueueFileCollection
-let getQueueFileCollection = (req, res) => {
+let getQueueFileCollectionService = (req, res) => {
 	filewalker(queueDirectory, queueDirectory, 1, null, true, false, function (err, files) {
 		if (err) throw err;
 		
@@ -17,7 +19,7 @@ let getQueueFileCollection = (req, res) => {
 };
 
 // getArchiveFileCollection
-let getArchiveFileCollection = (req, res) => {
+let getArchiveFileCollectionService = (req, res) => {
 	var relativeDestinationDirectory = req.params.directoryName;
 	if (!relativeDestinationDirectory) throw new Error('missing mandatory parameter');
 	if (relativeDestinationDirectory.includes('..')) throw new Error('invalid parameter');
@@ -32,7 +34,7 @@ let getArchiveFileCollection = (req, res) => {
 };
 
 // putQueueFile
-let putQueueFile = (req, res) => {
+let putQueueFileService = (req, res) => {
 	var fileName = req.params.fileName;
 	var newfileName = req.query.newFileName;
 	var relativeDestinationDirectory = req.query.destination;
@@ -109,24 +111,52 @@ let putQueueFile = (req, res) => {
 };
 
 // getArchiveDirectoryCollection
-let getArchiveDirectoryCollection = (req, res) => {
+let getArchiveDirectoryCollectionService = (req, res) => {
 	var parentDirectory = req.params.directoryName;
-	var directoryNamePattern = req.query.pattern;
+	var directoryNamePattern = req.query.pattern ? req.query.pattern.toLowerCase() : "";
 	var depth = req.query.depth;
 	if (parentDirectory.includes('..') || (directoryNamePattern && directoryNamePattern.includes('..')) || (directoryNamePattern && directoryNamePattern.includes('/')) || !Number.isInteger(parseInt(depth)) || (depth < 0) || (depth > 25)) throw new Error('invalid parameter');
 	
-	filewalker(path.join(destinationRootDirectory, parentDirectory), destinationRootDirectory, depth, directoryNamePattern, false, true, function (err, dirs) {
-		if (err) throw err;
+	if (directoryCache == null) {
+		updateArchiveDirectoryCache(function() {
+			res.json(getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth));
+		}, depth);
+	} else {
+		res.json(getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth));
+	}
+	
 		
-		res.json(dirs);
-	});
 };
 
-/**
- * Explores recursively a directory up tp a defined depth and returns all the folderpaths in the callback.
- * 
- * @see http://stackoverflow.com/a/5827895/4241030
- */
+function getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth) {
+	parentDirectory = ("/" === parentDirectory) ? "" : parentDirectory;
+	return responseBódy = directoryCache.filter(cachedEntry => { 
+		return cachedEntry.startsWith(parentDirectory) && // ensure correct parent directory
+			((cachedEntry.substr(parentDirectory.length + 1).split(path.sep).length - 1) < parseInt(depth)) && // part after parent directory considers depth
+			cachedEntry.substr(cachedEntry.lastIndexOf(path.sep) + 1).toLowerCase().includes(directoryNamePattern) && // consider search pattern in leaf
+			cachedEntry != parentDirectory // do not return parent directory itself
+			;
+	});
+}
+
+
+let updateArchiveDirectoryCacheService = (req, res) => {
+	var depth = req.query.depth;
+	if (!Number.isInteger(parseInt(depth)) || (depth < 0) || (depth > 25)) throw new Error('invalid parameter');
+	
+	updateArchiveDirectoryCache(function() {res.json("ok");}, depth);	
+};
+
+function updateArchiveDirectoryCache(onComplete, depth) {
+	filewalker(destinationRootDirectory, destinationRootDirectory, depth, null, false, true, function (err, dirs) {
+		if (err) throw err;
+		
+		directoryCache = dirs;
+		
+		onComplete();
+	});
+}
+
 function filewalker(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, returnDirectories, done) {
     let results = [];
 
@@ -149,6 +179,50 @@ function filewalker(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, 
 					if (stat.isDirectory()) {
 						filewalker(fullFile, baseDir, levelToGo - 1, directoryNamePattern, returnFiles, returnDirectories, function(err, res){
 							results = results.concat(res);
+							if (!--pending) done(null, results);
+						});
+					} else {
+						if (!--pending) done(null, results);
+					}
+				} else {
+					if (!--pending) done(null, results);
+				}
+			});
+		});
+	});
+};
+/**
+ * Explores recursively a directory up tp a defined depth and returns all the folderpaths in the callback.
+ * 
+ * @see http://stackoverflow.com/a/5827895/4241030
+ */
+function filewalkerNew(dir, baseDir, levelToGo, directoryNamePattern, returnFiles, returnDirectories, done) {
+    let results = {};
+
+	fs.readdir(dir, function(err, list) {
+		if (err) return done(err);
+
+		var pending = list.length;
+
+		if ((!pending) || (levelToGo == 0)) return done(null, results);
+				
+		list.forEach(function(file){
+			let fullFile = path.resolve(dir, file);
+			fs.stat(fullFile, function(err, stat){
+				if (stat && ((returnDirectories && stat.isDirectory()) || (returnFiles && !stat.isDirectory()))) {
+					if ((!directoryNamePattern || (directoryNamePattern && file.toLowerCase().includes(directoryNamePattern.toLowerCase()))) && (true)) {
+						var relativeDir = dir.substr(dir.lastIndexOf("\\") + 1);
+						if (!results[relativeDir]) {
+							results[relativeDir] = {};
+						}
+						results[relativeDir][file] = false;
+					}
+
+					if (stat.isDirectory()) {
+						filewalker(fullFile, baseDir, levelToGo - 1, directoryNamePattern, returnFiles, returnDirectories, function(err, res){
+							if (Object.keys(res).length > 0) {
+								results[relativeDir] = {...results[relativeDir], ...res};
+							}
 							if (!--pending) done(null, results);
 						});
 					} else {
@@ -196,10 +270,11 @@ function move(oldPath, newPath, callback) {
     }
 }
 
-exports.getQueueFileCollection = getQueueFileCollection;
-exports.getArchiveDirectoryCollection = getArchiveDirectoryCollection;
-exports.getArchiveFileCollection = getArchiveFileCollection;
-exports.putQueueFile = putQueueFile;
+exports.getQueueFileCollectionService = getQueueFileCollectionService;
+exports.getArchiveDirectoryCollectionService = getArchiveDirectoryCollectionService;
+exports.getArchiveFileCollectionService = getArchiveFileCollectionService;
+exports.updateArchiveDirectoryCacheService = updateArchiveDirectoryCacheService;
+exports.putQueueFileService = putQueueFileService;
 
 function escapeShellArg (arg) {
 	return `"${arg.replace(/'/g, `'\\''`)}"`;

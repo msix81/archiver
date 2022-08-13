@@ -48,6 +48,15 @@
 				logout();
 				location.href = '/';
 			});
+			$('#renewCache').click(function(evt) {
+				$.ajax({
+					type: 'POST',
+					url: basePathBackend + '/archive/update-directory-cache?depth=25',
+					success: function(){
+						window.location.reload();
+					}
+				});
+			});
 			directoryNamePatternElm.on('input', function() {
 				clearTimeout(timer);
 				directoriesElm.empty().append('Verzeichnisse werden geladen...');
@@ -233,7 +242,7 @@
 						
 						// make sure that directory captions are unambiguous
 						$.each(fullDirectoryNames, function(i, fullDirectoryName) {
-							var shortDirectoryName = fullDirectoryName.split('/').pop();
+							var shortDirectoryName = fullDirectoryName.split("/").pop(); // this will not work properly on Windows
 							
 							if (!fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName]) {
 								fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName] = new Array();
@@ -345,7 +354,10 @@
 		
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active">
+				<li class="nav-item">
+					<a class="nav-link" href="#" id="renewCache">Cache erneuern</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="#" id="logout">Abmelden</a>
 				</li>
 			</ul>
