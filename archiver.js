@@ -120,7 +120,7 @@ let getArchiveDirectoryCollectionService = (req, res) => {
 	if (directoryCache == null) {
 		updateArchiveDirectoryCache(function() {
 			res.json(getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth));
-		}, depth);
+		}, 25);
 	} else {
 		res.json(getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth));
 	}
