@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#563d7c">
+	<title>Archiver</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/frontend.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var basePathBackend = '';
+
+		$(document).ready(function() {
+
+			// binds
+			$('#renewCache').click(function(evt) {
+				$.ajax({
+					type: 'POST',
+					url: basePathBackend + '/archive/update-directory-cache?depth=25',
+					success: function(){
+						window.location.reload();
+					}
+				});
+			});
+			
+			// --------------------------- functions
+			
+			// --------------------------- onload functionality
+		});
+		
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+		<a class="navbar-brand" href="/">Archiver</a>
+		
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="archive.html">Archivieren</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#" id="renewCache">Cache erneuern</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#" id="logout">Abmelden</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<main role="main" class="container">
+		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
+			Konfiguration erfolgreich geändert!
+		</div>
+
+		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
+			Fehler aufgetreten!
+		</div>
+	
+		<a class="btn btn-primary" href="#" role="button" id="archive">Speichern</a>
+		
+		<div class="ml-1">&nbsp;</div>
+	</main><!-- /.container -->
+</body>
+</html>

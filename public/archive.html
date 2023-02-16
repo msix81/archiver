@@ -49,15 +49,6 @@
 				logout();
 				location.href = '/';
 			});
-			$('#renewCache').click(function(evt) {
-				$.ajax({
-					type: 'POST',
-					url: basePathBackend + '/archive/update-directory-cache?depth=25',
-					success: function(){
-						window.location.reload();
-					}
-				});
-			});
 			directoryNamePatternElm.on('input', function() {
 				clearTimeout(timer);
 				directoriesElm.empty().append('Verzeichnisse werden geladen...');
@@ -367,7 +358,7 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">
-					<a class="nav-link" href="#" id="renewCache">Cache erneuern</a>
+					<a class="nav-link" href="administration.html">Administration</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#" id="logout">Abmelden</a>
