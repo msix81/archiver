@@ -17,6 +17,7 @@
 		var chosenDirectory = null;
 		var timer;
 		var allowDateSpinner = false;
+		var fileNamePatternsToSuggestions;
 
 		$(document).ready(function() {
 			var unencryptedFilesElm = $('#unencryptedFiles');
@@ -29,6 +30,7 @@
 			var suggestedFileNameDateSpinElm = $('#suggestedFileNameDateSpin');
 			
 			loadQueue();
+			loadConfig();
 			chooseSubdirectory('/');
 
 			// binds
@@ -190,17 +192,17 @@
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
 				var matches = false;
 
-				if (typeof fileNamePatternToSuggestions !== 'undefined') {
+				if (typeof fileNamePatternsToSuggestions !== 'undefined') {
 				
 					// find first matching search pattern
-					var matchingFileNamePattern = Object.keys(fileNamePatternToSuggestions).find(function(regexToTest) {matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
+					var matchingFileNamePattern = Object.keys(fileNamePatternsToSuggestions).find(function(regexToTest) {matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
 					
 					if (matchingFileNamePattern){
-						var result = {...fileNamePatternToSuggestions[matchingFileNamePattern]};
+						var result = {...fileNamePatternsToSuggestions[matchingFileNamePattern]};
 	
 						// get unparsed suggestions
-						var filenameSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].filename ? fileNamePatternToSuggestions[matchingFileNamePattern].filename : '';
-						var folderSuggestion = fileNamePatternToSuggestions[matchingFileNamePattern].folder ? fileNamePatternToSuggestions[matchingFileNamePattern].folder : '';
+						var filenameSuggestion = fileNamePatternsToSuggestions[matchingFileNamePattern].filename ? fileNamePatternsToSuggestions[matchingFileNamePattern].filename : '';
+						var folderSuggestion = fileNamePatternsToSuggestions[matchingFileNamePattern].folder ? fileNamePatternsToSuggestions[matchingFileNamePattern].folder : '';
 
 						// inject now into named groups
 						var now = new Date();
@@ -341,6 +343,16 @@
 				document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;domain=sintra;path=/";
 			}
 			
+			function loadConfig() {
+				$.ajax({
+					type: 'GET',
+					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
+					success: function(res){
+						fileNamePatternsToSuggestions = JSON.parse(res.replace(/\\/g, '\\\\'));
+						console.log('config updated');
+					}
+				});;
+			}
 		});
 		
 	</script>

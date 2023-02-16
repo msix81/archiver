@@ -14,6 +14,8 @@ function main () {
 	app.get('/archive/:directoryName/file', authenticator.checkToken, archiver.getArchiveFileCollectionService);
 	app.put('/queue/:fileName', authenticator.checkToken, archiver.putQueueFileService);
 	app.get('/queue', authenticator.checkToken, archiver.getQueueFileCollectionService);
+	app.get('/config/:parameterName', authenticator.checkToken, archiver.getConfigParameterService);
+	app.put('/config/:parameterName', authenticator.checkToken, archiver.putConfigParameterService);
 
 	// embed frontend
 	app.use(express.static('public'));

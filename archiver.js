@@ -225,11 +225,40 @@ function move(oldPath, newPath, callback) {
         readStream.pipe(writeStream);
     }
 }
+			
+let getConfigParameterService = (req, res) => {
+	var parameterName = req.params.parameterName;
+	if (parameterName !== 'fileNamePatternsToSuggestions') throw new Error('invalid parameter name');
+	
+	// we treat every parameter as string, therefore no conversion whatsoever
+	res.status(200).send(config.fileNamePatternsToSuggestions);	
+};
+
+let putConfigParameterService = (req, res) => {
+	var parameterName = req.params.parameterName;
+	var incomingData = '';
+	if (parameterName !== 'fileNamePatternsToSuggestions') throw new Error('invalid parameter name');
+
+	req.setEncoding('utf8');
+	req.on('data', function(chunk) { incomingData += chunk; });
+	
+	// after data transmission has finished
+	req.on('end', function() { 
+		var parameterValue = incomingData;
+		
+		// we treat every parameter as string, therefore no conversion whatsoever
+		config[parameterName] = parameterValue;
+		
+		res.status(200).send('config "' + parameterName + '" updated with ' + parameterValue);
+	});
+};
 
 exports.getQueueFileCollectionService = getQueueFileCollectionService;
 exports.getArchiveDirectoryCollectionService = getArchiveDirectoryCollectionService;
 exports.getArchiveFileCollectionService = getArchiveFileCollectionService;
+exports.getConfigParameterService = getConfigParameterService;
 exports.updateArchiveDirectoryCacheService = updateArchiveDirectoryCacheService;
+exports.putConfigParameterService = putConfigParameterService;
 exports.putQueueFileService = putQueueFileService;
 
 function escapeShellArg (arg) {
