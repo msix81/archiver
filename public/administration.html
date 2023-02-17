@@ -25,9 +25,10 @@
 			var upgradeSuggestionElm = $('#upgradeSuggestion');
 			var downgradeSuggestionElm = $('#downgradeSuggestion');
 			var exportSuggestionsElm = $('#exportSuggestions');
+			var suggestionEditFieldsElm = $('#suggestionEditFields');
 
 			// --------------------------- onload functionality
-			loadConfig();
+			loadConfig(function() {renderSuggestions()});
 
 			// binds
 			$('#renewCache').click(function(evt) {
@@ -128,24 +129,9 @@
 				});
 			}
 			
-			function loadConfig() {
-				$.ajax({
-					type: 'GET',
-					url: basePathBackend + '/config/suggestions',
-					success: function(res){
-						suggestions = JSON.parse(res);
-						renderSuggestions();
-						console.log('config loaded');
-					}
-				});;
-			}
-			
 			function renderSuggestions() {
 				suggestionsListElm.empty();
-				removeSuggestionElm.hide();
-				upgradeSuggestionElm.hide();
-				downgradeSuggestionElm.hide();
-				saveSuggestionElm.hide();
+				suggestionEditFieldsElm.hide();
 				
 				$.each(suggestions.sort((a,b) => (a.order > b.order) ? 1 : ((b.order > a.order) ? -1 : 0)), function(index, suggestion) {
 					var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" id="suggestion-id-' + suggestion.id + '" />')
@@ -164,7 +150,6 @@
 						suggestionFilenameElm.val(suggestion.filename);
 						suggestionFoldernameElm.val(suggestion.foldername);
 						
-						removeSuggestionElm.show();
 						if (suggestionIdElm.data('index') < suggestions.length - 1) {
 							downgradeSuggestionElm.show();
 						} else {
@@ -175,7 +160,7 @@
 						} else {
 							upgradeSuggestionElm.hide();
 						}
-						saveSuggestionElm.show();
+						suggestionEditFieldsElm.show();
 						
 						suggestionNameElm.select();
 					});
@@ -226,44 +211,40 @@
 			
 			<div class="ml-1">&nbsp;</div>
 			
-			<div class="input-group mb-3">
-				<input type="hidden" id="suggestionId" />
-				<input type="hidden" id="suggestionOrder" />
-				<input type="text" class="form-control glowable" id="suggestionName" placeholder="Vorschlagsname" />
-			</div>
-			<div class="input-group mb-3">
-				<input type="text" class="form-control glowable" id="suggestionExample" placeholder="Beispiel-Dateiname" />
-			</div>
-			<div class="input-group mb-3">
-				<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regulärer Ausdruck" />
-			</div>
-			<div class="input-group mb-3">
-				<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Vorzuschlagender Dateiname" />
-			</div>
-			<div class="input-group mb-3">
-				<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Vorzuschlagender Ordnername" />
+			<div id="suggestionEditFields" style="display: none">
+				<div class="input-group mb-3">
+					<input type="hidden" id="suggestionId" />
+					<input type="hidden" id="suggestionOrder" />
+					<input type="text" class="form-control glowable" id="suggestionName" placeholder="Vorschlagsname" />
+
+					<input type="text" class="form-control glowable" id="suggestionExample" placeholder="Beispiel-Dateiname" />
+				</div>
+				<div class="input-group mb-3">
+					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regulärer Ausdruck" />
+				</div>
+				<div class="input-group mb-3">
+					<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Vorzuschlagender Dateiname" />
+
+					<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Vorzuschlagender Ordnername" />
+				</div>
+				
+				<a class="btn btn-secondary" href="#" role="button" id="upgradeSuggestion">&uarr;</a>
+				
+				<a class="btn btn-secondary" href="#" role="button" id="downgradeSuggestion">&darr;</a>
+				
+				<a class="btn btn-secondary" href="#" role="button" id="removeSuggestion">Löschen</a>
+						
+				<a class="btn btn-primary" href="#" role="button" id="saveSuggestion">Speichern</a>
 			</div>
 		</form>
 
-		<a class="btn btn-secondary" href="#" role="button" id="upgradeSuggestion" style="display: none">&uarr;</a>
-		
-		<a class="btn btn-secondary" href="#" role="button" id="downgradeSuggestion" style="display: none">&darr;</a>
-		
-		<a class="btn btn-secondary" href="#" role="button" id="removeSuggestion" style="display: none">Löschen</a>
-				
-		<a class="btn btn-primary" href="#" role="button" id="saveSuggestion" style="display: none">Speichern</a>
-
-		<p>
-		
-		</p>
+		<div class="ml-1">&nbsp;</div>
 
 		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">Neu</a>
 
 		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions">Alle exportieren...</a>
 	
-		<p>
-		
-		</p>
+		<div class="ml-1">&nbsp;</div>
 		
 		<h5>
 			Verzeichniscache

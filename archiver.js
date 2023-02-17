@@ -236,7 +236,7 @@ let getConfigParameterService = (req, res) => {
 	}
 	
 	// we treat every parameter as string, therefore no conversion whatsoever
-	res.status(200).send(config.suggestions);	
+	res.status(200).send(config[parameterName]);	
 };
 
 let putConfigParameterService = (req, res) => {
