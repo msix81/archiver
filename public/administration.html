@@ -125,6 +125,7 @@
 							saveSuggestions();
 						} catch (err) {
 							console.error("No valid JSON input");
+							console.error(err);
 							$('#errormessage').show();
 						}
 					}
