@@ -26,6 +26,7 @@ docker run -d \
 	--env ARCHIVER_SECRET='put-a-secret-string-here' \
 	--env ARCHIVER_GPGPKID='id of the GPG public key you provided in the container' \
 	--restart unless-stopped \
+	-p <your desired port>:8080
 	<Docker Hub user>/archiver
 ```
 
@@ -59,5 +60,5 @@ node index.js > archiver.log
 ## How to access Archiver
 Open in a browser
 ```
-http://<your host's IP address>:<configured port, 8080 by default>/
+http://<your host's IP address>:<your desired port>/
 ```
