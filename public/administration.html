@@ -25,7 +25,11 @@
 			var upgradeSuggestionElm = $('#upgradeSuggestion');
 			var downgradeSuggestionElm = $('#downgradeSuggestion');
 			var exportSuggestionsElm = $('#exportSuggestions');
+			var importSuggestionsElm = $('#importSuggestions');
+			var importSuggestionsFileElm = $('#importSuggestionsFile');
 			var suggestionEditFieldsElm = $('#suggestionEditFields');
+			
+			
 
 			// --------------------------- onload functionality
 			loadConfig(function() {renderSuggestions()});
@@ -103,6 +107,32 @@
 			exportSuggestionsElm.click(function(evt) {
 				window.location.href = basePathBackend + 'config/suggestions?download';
 			});
+			importSuggestionsElm.click(function(evt) {
+				$('#importSuggestionsFile').click();
+			});
+			importSuggestionsFileElm.on('change', function() {
+				var file = importSuggestionsFileElm[0].files[0];
+				if (file) {
+					var reader = new FileReader();
+					reader.readAsText(file, "UTF-8");
+					reader.onload = function (evt) {
+					
+						try {
+							suggestions = JSON.parse(evt.target.result);
+							
+							renderSuggestions();
+							
+							saveSuggestions();
+						} catch (err) {
+							console.error("No valid JSON input");
+							$('#errormessage').show();
+						}
+					}
+					reader.onerror = function (evt) {
+						$('#errormessage').show();
+					}
+				}
+			});
 			
 			// --------------------------- functions
 			function switchSuggestionOrders(deltaToSwitchWith) {
@@ -141,14 +171,18 @@
 						suggestionsListElm.children().removeClass('active');
 						elm.addClass('active');
 
-						suggestionIdElm.data('index', index);
-						suggestionIdElm.val(suggestion.id);
-						suggestionOrderElm.val(suggestion.order);
-						suggestionNameElm.val(suggestion.name);
-						suggestionExampleElm.val(suggestion.example);
-						suggestionPatternElm.val(suggestion.pattern);
-						suggestionFilenameElm.val(suggestion.filename);
-						suggestionFoldernameElm.val(suggestion.foldername);
+						try {
+							suggestionIdElm.data('index', index);
+							suggestionIdElm.val(suggestion.id);
+							suggestionOrderElm.val(suggestion.order);
+							suggestionNameElm.val(suggestion.name);
+							suggestionExampleElm.val(suggestion.example);
+							suggestionPatternElm.val(suggestion.pattern);
+							suggestionFilenameElm.val(suggestion.filename);
+							suggestionFoldernameElm.val(suggestion.foldername);
+						} catch (err) {
+							throw new Error('no valid suggestion format');
+						}
 						
 						if (suggestionIdElm.data('index') < suggestions.length - 1) {
 							downgradeSuggestionElm.show();
@@ -236,6 +270,8 @@
 						
 				<a class="btn btn-primary" href="#" role="button" id="saveSuggestion">Speichern</a>
 			</div>
+			
+			<input id="importSuggestionsFile" type="file" style="display: none" />
 		</form>
 
 		<div class="ml-1">&nbsp;</div>
@@ -243,6 +279,8 @@
 		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">Neu</a>
 
 		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions">Alle exportieren...</a>
+		
+		<a class="btn btn-secondary" href="#" role="button" id="importSuggestions">Alle importieren...</a>
 	
 		<div class="ml-1">&nbsp;</div>
 		
