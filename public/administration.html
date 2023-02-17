@@ -115,7 +115,7 @@
 				// send to backend
 				$.ajax({
 					type: 'PUT',
-					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
+					url: basePathBackend + '/config/suggestions',
 					data: JSON.stringify(suggestions),
 					success: function(){
 						$('#suggestionsForm input').val('');
@@ -127,7 +127,7 @@
 			function loadConfig() {
 				$.ajax({
 					type: 'GET',
-					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
+					url: basePathBackend + '/config/suggestions',
 					success: function(res){
 						suggestions = JSON.parse(res);
 						renderSuggestions();

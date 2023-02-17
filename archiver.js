@@ -228,16 +228,16 @@ function move(oldPath, newPath, callback) {
 			
 let getConfigParameterService = (req, res) => {
 	var parameterName = req.params.parameterName;
-	if (parameterName !== 'fileNamePatternsToSuggestions') throw new Error('invalid parameter name');
+	if (parameterName !== 'suggestions') throw new Error('invalid parameter name');
 	
 	// we treat every parameter as string, therefore no conversion whatsoever
-	res.status(200).send(config.fileNamePatternsToSuggestions);	
+	res.status(200).send(config.suggestions);	
 };
 
 let putConfigParameterService = (req, res) => {
 	var parameterName = req.params.parameterName;
 	var incomingData = '';
-	if (parameterName !== 'fileNamePatternsToSuggestions') throw new Error('invalid parameter name');
+	if (parameterName !== 'suggestions') throw new Error('invalid parameter name');
 
 	req.setEncoding('utf8');
 	req.on('data', function(chunk) { incomingData += chunk; });

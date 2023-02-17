@@ -8,7 +8,7 @@ function logout() {
 function loadConfig() {
 	$.ajax({
 		type: 'GET',
-		url: basePathBackend + '/config/fileNamePatternsToSuggestions',
+		url: basePathBackend + '/config/suggestions',
 		success: function(res){
 			suggestions = JSON.parse(res);
 			console.log('config loaded');
