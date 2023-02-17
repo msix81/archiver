@@ -6,5 +6,5 @@ module.exports = {
 	directoryBlacklist: ['@eaDir'],
 	gpgPublicKeyId: process.env.ARCHIVER_GPGPKID, // <id of your gpg public key to encrpyt with - when using Archiver in Docker, this would typically come from an environment variable>
 	port: 8080,
-	fileNamePatternsToSuggestions: '[]',
+	suggestions: '[]',
 };
