@@ -9,10 +9,23 @@
 	<link rel="stylesheet" href="css/frontend.css">
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	<script src="js/commons.js"></script>
 	<script type="text/javascript">
-		var basePathBackend = '';
+		var fileNamePatternsToSuggestions;
 
 		$(document).ready(function() {
+			var fileNamePatternsToSuggestionsListElm = $('#fileNamePatternsToSuggestionsList');
+			var suggestionNameElm = $('#suggestionName');
+			var suggestionExampleElm = $('#suggestionExample');
+			var suggestionPatternElm = $('#suggestionPattern');
+			var suggestionFilenameElm = $('#suggestionFilename');
+			var suggestionFoldernameElm = $('#suggestionFoldername');
+			var suggestionIdElm = $('#suggestionId');
+			var removeSuggestionElm = $('#removeSuggestion');
+			
+
+			// --------------------------- onload functionality
+			loadConfig();
 
 			// binds
 			$('#renewCache').click(function(evt) {
@@ -20,14 +33,97 @@
 					type: 'POST',
 					url: basePathBackend + '/archive/update-directory-cache?depth=25',
 					success: function(){
-						window.location.reload();
+						$('#successmessage').show().delay(4000).slideUp(400, function() {window.location.reload()});
 					}
 				});
 			});
+			$('#saveSuggestions').click(function(evt) {
+			
+				// update locally
+				fileNamePatternsToSuggestions[suggestionIdElm.val()] = {
+					name: suggestionNameElm.val(),
+					pattern: suggestionPatternElm.val(),
+					example: suggestionExampleElm.val(),
+					filename: suggestionFilenameElm.val(),
+					foldername: suggestionFoldernameElm.val(),
+				}
+				
+				saveSuggestions();
+			});
+			removeSuggestionElm.click(function(evt) {
+			
+				// update locally
+				delete fileNamePatternsToSuggestions[suggestionIdElm.val()];
+				
+				renderSuggestions();
+				
+				saveSuggestions();
+			});
+			$('#addSuggestion').click(function(evt) {
+			
+				fileNamePatternsToSuggestions[fileNamePatternsToSuggestions.length] = {
+					name: "+++ Neuer Eintrag +++",
+					pattern: null,
+					example: null,
+					filename: null,
+					foldername: null,
+				}
+				
+				renderSuggestions();
+			});
 			
 			// --------------------------- functions
+			function saveSuggestions() {
+				
+				// send to backend
+				$.ajax({
+					type: 'PUT',
+					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
+					data: JSON.stringify(fileNamePatternsToSuggestions),
+					success: function(){
+						$('#successmessage').show().delay(4000).slideUp();
+					}
+				});
+			}
 			
-			// --------------------------- onload functionality
+			function loadConfig() {
+				$.ajax({
+					type: 'GET',
+					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
+					success: function(res){
+						fileNamePatternsToSuggestions = JSON.parse(res);
+						renderSuggestions();
+						console.log('config loaded');
+					}
+				});;
+			}
+			
+			function renderSuggestions() {
+				fileNamePatternsToSuggestionsListElm.empty();
+				removeSuggestionElm.hide();
+				$.each(fileNamePatternsToSuggestions, function(id, suggestion) {
+					var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+						.append(suggestion.name);
+						
+					elm.click(function() {
+						fileNamePatternsToSuggestionsListElm.children().removeClass('active');
+						elm.addClass('active');
+
+						suggestionIdElm.val(id);
+						suggestionNameElm.val(fileNamePatternsToSuggestions[id].name);
+						suggestionExampleElm.val(fileNamePatternsToSuggestions[id].example);
+						suggestionPatternElm.val(fileNamePatternsToSuggestions[id].pattern);
+						suggestionFilenameElm.val(fileNamePatternsToSuggestions[id].filename);
+						suggestionFoldernameElm.val(fileNamePatternsToSuggestions[id].foldername);
+						
+						removeSuggestionElm.show();
+					});
+					
+					fileNamePatternsToSuggestionsListElm.append(elm);
+
+				});
+			}
+			
 		});
 		
 	</script>
@@ -62,9 +158,37 @@
 		</div>
 
 		<h5>
-			Namens- und Verzeichnisvorschläge
+			Datei- und Ordnervorschläge
 		</h5>
-		<a class="btn btn-primary" href="#" role="button" id="archive">Speichern</a>
+		<form>
+			<div class="list-group" id="fileNamePatternsToSuggestionsList">
+			</div>
+			
+			<div class="ml-1">&nbsp;</div>
+			
+			<div class="input-group mb-3">
+				<input type="hidden" id="suggestionId" />
+				<input type="text" class="form-control glowable" id="suggestionName" placeholder="Vorschlagsname" />
+			</div>
+			<div class="input-group mb-3">
+				<input type="text" class="form-control glowable" id="suggestionExample" placeholder="Beispiel-Dateiname" />
+			</div>
+			<div class="input-group mb-3">
+				<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regulärer Ausdruck" />
+			</div>
+			<div class="input-group mb-3">
+				<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Vorzuschlagender Dateiname" />
+			</div>
+			<div class="input-group mb-3">
+				<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Vorzuschlagender Ordnername" />
+			</div>
+		</form>
+
+		<a class="btn btn-secondary" href="#" role="button" id="removeSuggestion">Löschen</a>
+		
+		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">Neu</a>
+		
+		<a class="btn btn-primary" href="#" role="button" id="saveSuggestions">Speichern</a>
 
 		<p>
 		

@@ -10,8 +10,8 @@
 	<script src="js/jquery.min.js"></script>
 	<script src="js/popper.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	<script src="js/commons.js"></script>
 	<script type="text/javascript">
-		var basePathBackend = '';
 		var chosenUnencryptedFile = null;
 		var chosenDirectory = null;
 		var timer;
@@ -185,14 +185,14 @@
 				if (typeof fileNamePatternsToSuggestions !== 'undefined') {
 				
 					// find first matching search pattern
-					var matchingFileNamePattern = Object.keys(fileNamePatternsToSuggestions).find(function(regexToTest) {matches = new RegExp(regexToTest, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
+					var matchingSuggestion = Object.values(fileNamePatternsToSuggestions).find(function(suggestion) {matches = new RegExp(suggestion.pattern, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
 					
-					if (matchingFileNamePattern){
-						var result = {...fileNamePatternsToSuggestions[matchingFileNamePattern]};
+					if (matchingSuggestion){
+						var result = {...matchingSuggestion};
 	
 						// get unparsed suggestions
-						var filenameSuggestion = fileNamePatternsToSuggestions[matchingFileNamePattern].filename ? fileNamePatternsToSuggestions[matchingFileNamePattern].filename : '';
-						var folderSuggestion = fileNamePatternsToSuggestions[matchingFileNamePattern].folder ? fileNamePatternsToSuggestions[matchingFileNamePattern].folder : '';
+						var filenameSuggestion = matchingSuggestion.filename ? matchingSuggestion.filename : '';
+						var folderSuggestion = matchingSuggestion.foldername ? matchingSuggestion.foldername : '';
 
 						// inject now into named groups
 						var now = new Date();
@@ -329,20 +329,7 @@
 				});
 			}
 			
-			function logout() {
-				document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;domain=sintra;path=/";
-			}
 			
-			function loadConfig() {
-				$.ajax({
-					type: 'GET',
-					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
-					success: function(res){
-						fileNamePatternsToSuggestions = JSON.parse(res.replace(/\\/g, '\\\\'));
-						console.log('config updated');
-					}
-				});;
-			}
 		});
 		
 	</script>
