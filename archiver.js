@@ -228,7 +228,12 @@ function move(oldPath, newPath, callback) {
 			
 let getConfigParameterService = (req, res) => {
 	var parameterName = req.params.parameterName;
+	var isDownload = req.query.download != null;
 	if (parameterName !== 'suggestions') throw new Error('invalid parameter name');
+	
+	if (isDownload) {
+		res.set('Content-Disposition', 'attachment; filename=archiver-parameter-' + parameterName + '-' + new Date().toISOString().split('T')[0] + '.txt');
+	}
 	
 	// we treat every parameter as string, therefore no conversion whatsoever
 	res.status(200).send(config.suggestions);	

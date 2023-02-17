@@ -24,6 +24,7 @@
 			var removeSuggestionElm = $('#removeSuggestion');
 			var upgradeSuggestionElm = $('#upgradeSuggestion');
 			var downgradeSuggestionElm = $('#downgradeSuggestion');
+			var exportSuggestionsElm = $('#exportSuggestions');
 
 			// --------------------------- onload functionality
 			loadConfig();
@@ -80,7 +81,7 @@
 				
 				$('#suggestion-id-' + newSuggestionId).trigger('click');
 			});
-			$('#upgradeSuggestion').click(function(evt) {
+			upgradeSuggestionElm.click(function(evt) {
 				
 				// update locally, then render			
 				switchSuggestionOrders(-1);
@@ -89,7 +90,7 @@
 				
 				saveSuggestions();
 			});
-			$('#downgradeSuggestion').click(function(evt) {
+			downgradeSuggestionElm.click(function(evt) {
 				
 				// update locally, then render
 				switchSuggestionOrders(1);
@@ -97,6 +98,9 @@
 				renderSuggestions();
 				
 				saveSuggestions();
+			});
+			exportSuggestionsElm.click(function(evt) {
+				window.location.href = basePathBackend + 'config/suggestions?download';
 			});
 			
 			// --------------------------- functions
@@ -246,15 +250,21 @@
 		<a class="btn btn-secondary" href="#" role="button" id="downgradeSuggestion" style="display: none">&darr;</a>
 		
 		<a class="btn btn-secondary" href="#" role="button" id="removeSuggestion" style="display: none">Löschen</a>
-		
-		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">Neu</a>
-		
+				
 		<a class="btn btn-primary" href="#" role="button" id="saveSuggestion" style="display: none">Speichern</a>
 
 		<p>
 		
 		</p>
+
+		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">Neu</a>
+
+		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions">Alle exportieren...</a>
 	
+		<p>
+		
+		</p>
+		
 		<h5>
 			Verzeichniscache
 		</h5>
