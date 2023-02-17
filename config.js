@@ -1,5 +1,5 @@
 module.exports = {
-	secret: process.env.ARCHIVER_SECRET, //<put a good secret to secure your sessions here - when using Archiver in Docker, this would typically come from an environment variable>
+	secret: process.env.ARCHIVER_SECRET || (Math.random() * Date.now()).toString(), //<put a good secret to secure your sessions here - when using Archiver in Docker, this would typically come from an environment variable>
 	password: process.env.ARCHIVER_PASSWORD, //<this is the password to log in - when using Archiver in Docker, this would typically come from an environment variable>
 	documentFolderName: '/archiver-out', // <absolute folder name to archive into - when using Archiver in Docker, this would typically be /archiver-out>
 	queueFolderName: '/archiver-in', // <absolute folder name to read from - when using Archiver in Docker, this would typically be /archiver-in>
