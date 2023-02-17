@@ -11,10 +11,8 @@
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/commons.js"></script>
 	<script type="text/javascript">
-		var fileNamePatternsToSuggestions;
-
 		$(document).ready(function() {
-			var fileNamePatternsToSuggestionsListElm = $('#fileNamePatternsToSuggestionsList');
+			var suggestionsListElm = $('#suggestionsList');
 			var suggestionNameElm = $('#suggestionName');
 			var suggestionExampleElm = $('#suggestionExample');
 			var suggestionPatternElm = $('#suggestionPattern');
@@ -40,7 +38,7 @@
 			$('#saveSuggestions').click(function(evt) {
 			
 				// update locally
-				fileNamePatternsToSuggestions[suggestionIdElm.val()] = {
+				suggestions[suggestionIdElm.val()] = {
 					name: suggestionNameElm.val(),
 					pattern: suggestionPatternElm.val(),
 					example: suggestionExampleElm.val(),
@@ -53,7 +51,7 @@
 			removeSuggestionElm.click(function(evt) {
 			
 				// update locally
-				delete fileNamePatternsToSuggestions[suggestionIdElm.val()];
+				delete suggestions[suggestionIdElm.val()];
 				
 				renderSuggestions();
 				
@@ -61,7 +59,7 @@
 			});
 			$('#addSuggestion').click(function(evt) {
 			
-				fileNamePatternsToSuggestions[fileNamePatternsToSuggestions.length] = {
+				suggestions[Object.keys(suggestions).length] = {
 					name: "+++ Neuer Eintrag +++",
 					pattern: null,
 					example: null,
@@ -79,7 +77,7 @@
 				$.ajax({
 					type: 'PUT',
 					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
-					data: JSON.stringify(fileNamePatternsToSuggestions),
+					data: JSON.stringify(suggestions),
 					success: function(){
 						$('#successmessage').show().delay(4000).slideUp();
 					}
@@ -91,7 +89,7 @@
 					type: 'GET',
 					url: basePathBackend + '/config/fileNamePatternsToSuggestions',
 					success: function(res){
-						fileNamePatternsToSuggestions = JSON.parse(res);
+						suggestions = JSON.parse(res);
 						renderSuggestions();
 						console.log('config loaded');
 					}
@@ -99,27 +97,27 @@
 			}
 			
 			function renderSuggestions() {
-				fileNamePatternsToSuggestionsListElm.empty();
+				suggestionsListElm.empty();
 				removeSuggestionElm.hide();
-				$.each(fileNamePatternsToSuggestions, function(id, suggestion) {
+				$.each(suggestions, function(id, suggestion) {
 					var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
 						.append(suggestion.name);
 						
 					elm.click(function() {
-						fileNamePatternsToSuggestionsListElm.children().removeClass('active');
+						suggestionsListElm.children().removeClass('active');
 						elm.addClass('active');
 
 						suggestionIdElm.val(id);
-						suggestionNameElm.val(fileNamePatternsToSuggestions[id].name);
-						suggestionExampleElm.val(fileNamePatternsToSuggestions[id].example);
-						suggestionPatternElm.val(fileNamePatternsToSuggestions[id].pattern);
-						suggestionFilenameElm.val(fileNamePatternsToSuggestions[id].filename);
-						suggestionFoldernameElm.val(fileNamePatternsToSuggestions[id].foldername);
+						suggestionNameElm.val(suggestions[id].name);
+						suggestionExampleElm.val(suggestions[id].example);
+						suggestionPatternElm.val(suggestions[id].pattern);
+						suggestionFilenameElm.val(suggestions[id].filename);
+						suggestionFoldernameElm.val(suggestions[id].foldername);
 						
 						removeSuggestionElm.show();
 					});
 					
-					fileNamePatternsToSuggestionsListElm.append(elm);
+					suggestionsListElm.append(elm);
 
 				});
 			}
@@ -161,7 +159,7 @@
 			Datei- und Ordnervorschläge
 		</h5>
 		<form>
-			<div class="list-group" id="fileNamePatternsToSuggestionsList">
+			<div class="list-group" id="suggestionsList">
 			</div>
 			
 			<div class="ml-1">&nbsp;</div>

@@ -16,7 +16,6 @@
 		var chosenDirectory = null;
 		var timer;
 		var allowDateSpinner = false;
-		var fileNamePatternsToSuggestions;
 
 		$(document).ready(function() {
 			var unencryptedFilesElm = $('#unencryptedFiles');
@@ -182,10 +181,10 @@
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
 				var matches = false;
 
-				if (typeof fileNamePatternsToSuggestions !== 'undefined') {
+				if (typeof suggestions !== 'undefined') {
 				
 					// find first matching search pattern
-					var matchingSuggestion = Object.values(fileNamePatternsToSuggestions).find(function(suggestion) {matches = new RegExp(suggestion.pattern, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
+					var matchingSuggestion = Object.values(suggestions).find(function(suggestion) {matches = new RegExp(suggestion.pattern, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
 					
 					if (matchingSuggestion){
 						var result = {...matchingSuggestion};
