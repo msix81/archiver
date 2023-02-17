@@ -103,7 +103,7 @@
 						unencryptedFilesElm.empty();
 						
 						if (fileNames.length == 0) {
-							unencryptedFilesElm.text('keine vorhanden');
+							unencryptedFilesElm.text('n/a');
 						} else {
 							$.each(fileNames, function(i, fileName) {
 								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
