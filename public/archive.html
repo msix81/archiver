@@ -184,7 +184,7 @@
 				if (typeof suggestions !== 'undefined') {
 				
 					// find first matching search pattern
-					var matchingSuggestion = Object.values(suggestions).find(function(suggestion) {matches = new RegExp(suggestion.pattern, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
+					var matchingSuggestion = suggestions.find(function(suggestion) {matches = new RegExp(suggestion.pattern, 'gm').exec(unencryptedFileName); return matches && matches.length > 0});
 					
 					if (matchingSuggestion){
 						var result = {...matchingSuggestion};
