@@ -5,5 +5,6 @@ module.exports = {
 	queueFolderName: '/archiver-in', // <absolute folder name to read from - when using Archiver in Docker, this would typically be /archiver-in>
 	directoryBlacklist: ['@eaDir'],
 	gpgPublicKeyId: process.env.ARCHIVER_GPGPKID, // <id of your gpg public key to encrpyt with - when using Archiver in Docker, this would typically come from an environment variable>
-	port: 8080
+	port: 8080,
+	fileNamePatternsToSuggestions: '[]',
 };
