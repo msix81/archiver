@@ -247,21 +247,60 @@
 			<div class="ml-1">&nbsp;</div>
 			
 			<div id="suggestionEditFields" style="display: none">
+				<input type="hidden" id="suggestionId" />
+				<input type="hidden" id="suggestionOrder" />
 				<div class="input-group mb-3">
-					<input type="hidden" id="suggestionId" />
-					<input type="hidden" id="suggestionOrder" />
+					<div class="input-group-prepend">
+						<span class="input-group-text">Name:</span>
+					</div>
 					<input type="text" class="form-control glowable" id="suggestionName" placeholder="E.g. 'Insurance bill'" />
-
-					<input type="text" class="form-control glowable" id="suggestionExample" placeholder="E.g. 'bill-customer-123-2023-01.01.pdf'" />
 				</div>
 				<div class="input-group mb-3">
-					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regular expression to identify the file" />
+					<div class="input-group-prepend">
+						<span class="input-group-text">Example:</span>
+					</div>
+					<input type="text" class="form-control glowable" id="suggestionExample" placeholder="Input file name example, e.g. 'bill-customer-123-2023-01.01.pdf'" />
 				</div>
 				<div class="input-group mb-3">
-					<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Archiver will suggest this filename" />
-
-					<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Archiver will suggest this folder" />
+					<div class="input-group-prepend">
+						<span class="input-group-text">Pattern:</span>
+					</div>
+					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regular expression to identify the input file" />
 				</div>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text">File:</span>
+					</div>
+					<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Output file name to suggest for selected input file name" />
+				</div>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text">Folder:</span>
+					</div>
+					<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Output folder name to suggest" />
+				</div>
+				<small>
+					<p>
+						Note: You can use named capture groups inside your regex and replace substrings in filename and folder with their values. 
+						Use 'now:year', 'now:month' and 'now:date' to inject the current date. 
+						Use 'now:month-1' to inject the current month minus one.<br /><br />
+						Example 1:<br/>
+						<code>
+							Pattern: 'Scanned document (?&lt;dd&gt;[0-9]{2})\.(?&lt;mm&gt;[0-9]{2})\.(?&lt;yyyy&gt;[0-9]{4})*\.pdf'<br />
+							File: 'Letter &lt;mm&gt;.&lt;dd&gt;.pdf'<br />
+							Folder: 'Letters &lt;yyyy&gt;'<br />
+						</code>
+						</p>
+						<p>
+						Example 2:<br/>
+						<code>
+							Pattern: 'Invoice from today\.pdf'<br />
+							File: 'My invoice &lt;now:year&gt;-&lt;now:month&gt;-&lt;now:date&gt;.pdf'<br />
+							Folder: 'Folder XYZ'
+						</code>
+						</p>
+					</p>
+				</small>
 				
 				<a class="btn btn-secondary" href="#" role="button" id="upgradeSuggestion">&uarr;</a>
 				
