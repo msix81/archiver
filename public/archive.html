@@ -347,7 +347,7 @@
 					<a class="nav-link" href="administration.html">Administration</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#" id="logout">Abmelden</a>
+					<a class="nav-link" href="#" id="logout">Logout</a>
 				</li>
 			</ul>
 		</div>
@@ -355,16 +355,16 @@
 
 	<main role="main" class="container">
 		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
-			Datei erfolgreich archiviert!
+			File successfully archived!
 		</div>
 
 		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
-			Fehler aufgetreten!
+			Error occurred!
 		</div>
 
 		
 		<h5>
-			<strong>Zu verschlüsselnde Datei</strong>
+			<strong>File to archive</strong>
 		</h5>
 		
 		<div class="list-group" id="unencryptedFiles">
@@ -373,7 +373,7 @@
 		<div class="ml-1">&nbsp;</div>
 		
 		<h5>
-			<strong>Zielverzeichnis</strong>
+			<strong>Target folder</strong>
 		</h5>
 		<p id="chosenDirectory" class="lead glowable">
 
@@ -381,7 +381,7 @@
 
 		<form>
 			<div class="input-group mb-3">
-				<input type="text" class="form-control glowable" id="directoryNamePattern" placeholder="Tippen, um Verzeichnisse zu filtern..." />
+				<input type="text" class="form-control glowable" id="directoryNamePattern" placeholder="Type to filter folders..." />
 			</div>
 		</form>
 		<div class="list-group">
@@ -392,7 +392,7 @@
 		<div class="ml-1">&nbsp;</div>
 
 		<h5>
-			<strong>Dateiname</strong> <small><a href="javascript:void(0);" id ="newFileNameSuggestionsLink">Existierende als Vorlage &#9660;</a></small>
+			<strong>Filename</strong> <small><a href="javascript:void(0);" id ="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
 		</h5>
 		
 		<div class="list-group" id="newFileNameSuggestions">
@@ -406,12 +406,12 @@
 					<a href="javascript:void(0);" id="suggestedFileNameDateInc">&uarr;</a>&nbsp;
 					<a href="javascript:void(0);" id="suggestedFileNameDateDec">&darr;</a>
 				</div>
-				<input type="text" class="form-control glowable" id="newFileName" placeholder="Neuer Dateiname" />
+				<input type="text" class="form-control glowable" id="newFileName" placeholder="New filename" />
 			</div>
 
 		</form>
 	
-		<a class="btn btn-primary" href="#" role="button" id="archive">Archivieren</a>
+		<a class="btn btn-primary" href="#" role="button" id="archive">Archive</a>
 		
 		<div class="ml-1">&nbsp;</div>
 	</main><!-- /.container -->

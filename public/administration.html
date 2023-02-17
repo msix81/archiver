@@ -219,10 +219,10 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">
-					<a class="nav-link" href="archive.html">Archivieren</a>
+					<a class="nav-link" href="archive.html">Archive</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#" id="logout">Abmelden</a>
+					<a class="nav-link" href="#" id="logout">Logout</a>
 				</li>
 			</ul>
 		</div>
@@ -230,15 +230,15 @@
 
 	<main role="main" class="container">
 		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
-			Konfiguration erfolgreich geändert!
+			Configuration updated successfully!
 		</div>
 
 		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
-			Fehler aufgetreten!
+			Error occurred!
 		</div>
 
 		<h5>
-			Datei- und Ordnervorschläge
+			File and folder suggestions
 		</h5>
 		<form id="suggestionsForm">
 			<div class="list-group" id="suggestionsList">
@@ -250,17 +250,17 @@
 				<div class="input-group mb-3">
 					<input type="hidden" id="suggestionId" />
 					<input type="hidden" id="suggestionOrder" />
-					<input type="text" class="form-control glowable" id="suggestionName" placeholder="Vorschlagsname" />
+					<input type="text" class="form-control glowable" id="suggestionName" placeholder="E.g. 'Insurance bill'" />
 
-					<input type="text" class="form-control glowable" id="suggestionExample" placeholder="Beispiel-Dateiname" />
+					<input type="text" class="form-control glowable" id="suggestionExample" placeholder="E.g. 'bill-customer-123-2023-01.01.pdf'" />
 				</div>
 				<div class="input-group mb-3">
-					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regulärer Ausdruck" />
+					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regular expression to identify the file" />
 				</div>
 				<div class="input-group mb-3">
-					<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Vorzuschlagender Dateiname" />
+					<input type="text" class="form-control glowable" id="suggestionFilename" placeholder="Archiver will suggest this filename" />
 
-					<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Vorzuschlagender Ordnername" />
+					<input type="text" class="form-control glowable" id="suggestionFoldername" placeholder="Archiver will suggest this folder" />
 				</div>
 				
 				<a class="btn btn-secondary" href="#" role="button" id="upgradeSuggestion">&uarr;</a>
@@ -277,18 +277,18 @@
 
 		<div class="ml-1">&nbsp;</div>
 
-		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">Neu</a>
+		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion">New record</a>
 
-		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions">Alle exportieren...</a>
+		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions">Export all...</a>
 		
-		<a class="btn btn-secondary" href="#" role="button" id="importSuggestions">Alle importieren...</a>
+		<a class="btn btn-secondary" href="#" role="button" id="importSuggestions">Import all...</a>
 	
 		<div class="ml-1">&nbsp;</div>
 		
 		<h5>
-			Verzeichniscache
+			Folder cache
 		</h5>
-		<a class="btn btn-primary" href="#" role="button" id="renewCache">Cache erneuern</a>
+		<a class="btn btn-primary" href="#" role="button" id="renewCache">Rebuild folder cache</a>
 		
 		<div class="ml-1">&nbsp;</div>
 	</main><!-- /.container -->
