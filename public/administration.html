@@ -28,6 +28,7 @@
 			var importSuggestionsElm = $('#importSuggestions');
 			var importSuggestionsFileElm = $('#importSuggestionsFile');
 			var suggestionEditFieldsElm = $('#suggestionEditFields');
+			var suggestionTestElm = $('#suggestionTest');
 			
 			
 
@@ -132,6 +133,21 @@
 					reader.onerror = function (evt) {
 						$('#errormessage').show();
 					}
+				}
+			});
+			suggestionPatternElm.on('input', function(evt) {
+				suggestionTestElm.removeClass('btn-success').removeClass('btn-danger');
+			});
+			suggestionExampleElm.on('input', function(evt) {
+				suggestionTestElm.removeClass('btn-success').removeClass('btn-danger');
+			});
+			suggestionTestElm.on('click', function(evt) {
+				suggestionTestElm.removeClass('btn-success').removeClass('btn-danger');
+				var suggestionMatches = checkSuggestion(suggestionPatternElm.val(), suggestionExampleElm.val());
+				if (suggestionMatches) {
+					suggestionTestElm.addClass('btn-success');
+				} else {
+					suggestionTestElm.addClass('btn-danger');
 				}
 			});
 			
@@ -266,6 +282,9 @@
 						<span class="input-group-text">Pattern:</span>
 					</div>
 					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regular expression to identify the input file" />
+					<div class="input-group-append">
+						<button id="suggestionTest" class="btn btn-secondary" type="button">?</button>
+					</div>
 				</div>
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
