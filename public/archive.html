@@ -193,6 +193,9 @@
 						var filenameSuggestion = matchingSuggestion.filename ? matchingSuggestion.filename : '';
 						var folderSuggestion = matchingSuggestion.foldername ? matchingSuggestion.foldername : '';
 
+						// need to reexecute pattern match to get capturing groups
+						var matches = new RegExp(matchingSuggestion.pattern, 'gm').exec(unencryptedFileName); 
+
 						// inject now into named groups
 						var now = new Date();
 						var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:month-1': twoDigits(now.getMonth() + 1 - 1), 'now:date': twoDigits(now.getDate())}};
