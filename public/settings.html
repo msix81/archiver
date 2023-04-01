@@ -208,6 +208,7 @@
 						.append(suggestion.name);
 						
 					elm.click(function() {
+						$('#suggestionTitle').text(suggestion.name);
 						suggestionsListElm.children().removeClass('active');
 						elm.addClass('active');
 
@@ -277,7 +278,7 @@
 		</div>
 
 		<h2>
-			File and folder suggestions
+			Target suggestions
 		</h2>
 		
 		<a class="btn btn-light" href="#" role="button" id="addSuggestion" title="Add record">New</a>
@@ -295,12 +296,12 @@
 			<div class="ml-1">&nbsp;</div>
 			
 			<div id="suggestionEditFields" style="display: none" class="card card-body">
-				<h5>Edit suggestion</h5><br />
+				<h5>Edit suggestion "<span id="suggestionTitle"></span>"</h5><br />
 				<input type="hidden" id="suggestionId" />
 				<input type="hidden" id="suggestionOrder" />
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
-						<span class="input-group-text">Name:</span>
+						<span class="input-group-text">Description:</span>
 					</div>
 					<input type="text" class="form-control glowable" id="suggestionName" placeholder="E.g. 'Insurance bill'" />
 				</div>
