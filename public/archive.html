@@ -64,6 +64,7 @@
 			});
 			newFileNameSuggestionsLinkElm.click(function(evt) {
 				newFileNameSuggestionsElm.slideToggle();
+				smoothScroll($('#target-file-name'));
 			});
 			rootDirectorySelectorElm.html(indentionPrefix + '/')
 			document.onselectionchange = function() {
@@ -120,6 +121,7 @@
 									unencryptedFilesElm.find('.indention').show();
 									elm.addClass('active');
 									elm.children('.indention').hide();
+									smoothScroll($('#target-folder'));
 								});
 								
 								unencryptedFilesElm.append(elm);
@@ -336,7 +338,11 @@
 				});
 			}
 			
-			
+			function smoothScroll(elm) {
+				$('html, body').animate({
+					scrollTop: elm.offset().top - 60
+				}, 700);
+			}
 		});
 		
 	</script>
@@ -382,7 +388,7 @@
 		<div class="ml-1">&nbsp;</div>
 		
 		<h3>
-			Select target folder
+			<a name="target-folder" id="target-folder"></a>Select target folder
 		</h3>
 		<div class="list-group">
 			<span class="list-group-item active" id="chosenDirectory"></span>
@@ -394,14 +400,14 @@
 			</div>
 		</form>
 		<div class="list-group">
-			<a href="#" class="list-group-item list-group-item-action" id="rootDirectorySelector"></a>
+			<a href="javascript:void(0)" class="list-group-item list-group-item-action" id="rootDirectorySelector"></a>
 			<div id="directories"></div>
 		</div>
 
 		<div class="ml-1">&nbsp;</div>
 
 		<h3>
-			Enter target filename <small><a href="javascript:void(0);" id ="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
+			<a name="target-file-name" id="target-file-name"></a>Enter target file name <small><a href="javascript:void(0);" id="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
 		</h3>
 		
 		<div class="list-group" id="newFileNameSuggestions">

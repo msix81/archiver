@@ -10,9 +10,3 @@ body {
 .glowing {
 	background-color: #f5da42 !important;
 }
-
-#newFileNameSuggestions {
-	margin-left: 20px;
-	margin-right: 20px;
-	margin-bottom: 20px;
-}
