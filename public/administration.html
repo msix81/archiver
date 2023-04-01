@@ -28,7 +28,7 @@
 			var importSuggestionsElm = $('#importSuggestions');
 			var importSuggestionsFileElm = $('#importSuggestionsFile');
 			var suggestionEditFieldsElm = $('#suggestionEditFields');
-			var suggestionTestElm = $('#suggestionTest');
+			var testSuggestionElm = $('#testSuggestion');
 			
 
 			// --------------------------- onload functionality
@@ -135,25 +135,43 @@
 				}
 			});
 			suggestionPatternElm.on('input', function(evt) {
-				suggestionTestElm.removeClass('btn-success').removeClass('btn-danger');
+				testSuggestionElm.removeClass('btn-success').removeClass('btn-danger');
 			});
 			suggestionExampleElm.on('input', function(evt) {
-				suggestionTestElm.removeClass('btn-success').removeClass('btn-danger');
+				testSuggestionElm.removeClass('btn-success').removeClass('btn-danger');
 			});
-			suggestionTestElm.on('click', function(evt) {
-				suggestionTestElm.removeClass('btn-success').removeClass('btn-danger');
+			testSuggestionElm.on('click', function(evt) {
+				testSuggestionElm.removeClass('btn-success').removeClass('btn-danger');
 				var suggestionMatches = checkSuggestion(suggestionPatternElm.val(), suggestionExampleElm.val());
 				if (suggestionMatches) {
-					suggestionTestElm.addClass('btn-success');
+					testSuggestionElm.addClass('btn-success');
 				} else {
-					suggestionTestElm.addClass('btn-danger');
+					testSuggestionElm.addClass('btn-danger');
 				}
 			});
-			$('#suggestionDebug').click(function(evt) {
+			$('#debugSuggestion').click(function(evt) {
 				var regex = suggestionPatternElm.val();
 				var text = suggestionExampleElm.val();
 				var url = 'https://regex101.com/?regex=' + regex + '&testString=' + text;
 				window.open(url, '_blank').focus();
+			});
+			$('#cloneSuggestion').click(function(evt) {
+				var newSuggestionId = Date.now();
+				
+				// update locally, then render
+				suggestions.push({
+					id: newSuggestionId,
+					name: "+++ Cloned entry +++",
+					pattern: suggestionPatternElm.val(),
+					example: suggestionExampleElm.val(),
+					filename: suggestionFilenameElm.val(),
+					foldername: suggestionFoldernameElm.val(),
+					order: 0
+				});
+				
+				renderSuggestions();
+				
+				$('#suggestion-id-' + newSuggestionId).trigger('click');
 			});
 			
 			// --------------------------- functions
@@ -258,15 +276,15 @@
 			Error occurred!
 		</div>
 
-		<h5>
+		<h2>
 			File and folder suggestions
-		</h5>
+		</h2>
 		
-		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion" title="Add record">New record</a>
+		<a class="btn btn-light" href="#" role="button" id="addSuggestion" title="Add record">New</a>
 
-		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions" title="Export all records into a file">Export all...</a>
+		<a class="btn btn-light" href="#" role="button" id="exportSuggestions" title="Export all records into a file">Export all...</a>
 		
-		<a class="btn btn-secondary" href="#" role="button" id="importSuggestions" title="Replace all existing records by those from a file">Import all...</a>
+		<a class="btn btn-light" href="#" role="button" id="importSuggestions" title="Replace all existing records by those from a file">Import all...</a>
 	
 		<div class="ml-1">&nbsp;</div>
 
@@ -276,7 +294,8 @@
 			
 			<div class="ml-1">&nbsp;</div>
 			
-			<div id="suggestionEditFields" style="display: none">
+			<div id="suggestionEditFields" style="display: none" class="card card-body">
+				<h5>Edit suggestion</h5><br />
 				<input type="hidden" id="suggestionId" />
 				<input type="hidden" id="suggestionOrder" />
 				<div class="input-group mb-3">
@@ -297,10 +316,10 @@
 					</div>
 					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regular expression to identify the input file" />
 					<div class="input-group-append">
-						<button id="suggestionTest" class="btn btn-secondary" type="button" title="Test example file name against pattern">?</button>
+						<button id="testSuggestion" class="btn btn-secondary" type="button" title="Test example file name against pattern">?</button>
 					</div>
 					<div class="input-group-append">
-						<button id="suggestionDebug" class="btn btn-secondary" type="button" title="Open Regex101 to debug example file name and pattern">r101</button>
+						<button id="debugSuggestion" class="btn btn-secondary" type="button" title="Open Regex101 to debug example file name and pattern">r101</button>
 					</div>
 				</div>
 				<div class="input-group mb-3">
@@ -338,11 +357,13 @@
 					</p>
 				</small>
 				
-				<a class="btn btn-secondary" href="#" role="button" id="upgradeSuggestion" title="Move up">&uarr;</a>
+				<a class="btn btn-light" href="#" role="button" id="upgradeSuggestion" title="Move record one up">&uarr;</a>
 				
-				<a class="btn btn-secondary" href="#" role="button" id="downgradeSuggestion" title="Move down">&darr;</a>
+				<a class="btn btn-light" href="#" role="button" id="downgradeSuggestion" title="Move record one down">&darr;</a>
 				
-				<a class="btn btn-secondary" href="#" role="button" id="removeSuggestion" title="Remove record">Delete</a>
+				<a class="btn btn-light" href="#" role="button" id="cloneSuggestion" title="Clone record">Clone</a>
+
+				<a class="btn btn-light" href="#" role="button" id="removeSuggestion" title="Remove record">Delete</a>
 						
 				<a class="btn btn-primary" href="#" role="button" id="saveSuggestion" title="Save changes">Save</a>
 			</div>
@@ -352,10 +373,10 @@
 
 		<div class="ml-1">&nbsp;</div>
 		
-		<h5>
+		<h2>
 			Folder cache
-		</h5>
-		<a class="btn btn-primary" href="#" role="button" id="renewCache" title="Purge directory cache and reload from disk">Rebuild folder cache</a>
+		</h2>
+		<a class="btn btn-light" href="#" role="button" id="renewCache" title="Purge directory cache and reload from disk">Rebuild folder cache</a>
 		
 		<div class="ml-1">&nbsp;</div>
 	</main><!-- /.container -->
