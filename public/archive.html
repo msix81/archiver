@@ -16,6 +16,7 @@
 		var chosenDirectory = null;
 		var timer;
 		var allowDateSpinner = false;
+		var indentionPrefix = '<span class="indention">&#9657; </span>';
 
 		$(document).ready(function() {
 			var unencryptedFilesElm = $('#unencryptedFiles');
@@ -64,6 +65,7 @@
 			newFileNameSuggestionsLinkElm.click(function(evt) {
 				newFileNameSuggestionsElm.slideToggle();
 			});
+			rootDirectorySelectorElm.html(indentionPrefix + '/')
 			document.onselectionchange = function() {
 				var x = newFileNameElm.get(0);
 				if (allowDateSpinner && (x.selectionStart > 0) && (x.selectionStart != x.selectionEnd)) {
@@ -105,16 +107,19 @@
 						if (fileNames.length == 0) {
 							unencryptedFilesElm.text('n/a');
 						} else {
+							
 							$.each(fileNames, function(i, fileName) {
 								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
-									.append(caption);
+									.append(indentionPrefix + caption);
 									
 								elm.click(function() {
 									chooseFile(fileName);
-									elm.html(fileName.replace(/.{40}/g, "$&" + "<br />"));
+									elm.html(indentionPrefix + fileName.replace(/.{40}/g, "$&" + "<br />"));
 									unencryptedFilesElm.children().removeClass('active');
+									unencryptedFilesElm.find('.indention').show();
 									elm.addClass('active');
+									elm.children('.indention').hide();
 								});
 								
 								unencryptedFilesElm.append(elm);
@@ -251,7 +256,7 @@
 							
 							$.each(fullDirectoryNamesGroupedByShortDirectoryName, function(j, fullDirectoryName) {
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
-									.append(fullNameAsCaption ? shortDirectoryName + " <small>(in " + fullDirectoryName.replace(shortDirectoryName, "") + ")</small>" : shortDirectoryName);
+									.append(indentionPrefix + (fullNameAsCaption ? shortDirectoryName + " <small>(in " + fullDirectoryName.replace(shortDirectoryName, "") + ")</small>" : shortDirectoryName));
 								
 								elm.click(function() {
 									chooseSubdirectory(fullDirectoryName);
@@ -366,9 +371,9 @@
 		</div>
 
 		
-		<h2>
-			Source file
-		</h2>
+		<h3>
+			Select source file
+		</h3>
 		
 		<div class="list-group" id="unencryptedFiles">
 			none
@@ -376,28 +381,28 @@
 
 		<div class="ml-1">&nbsp;</div>
 		
-		<h2>
-			Target folder
-		</h2>
-		<p id="chosenDirectory" class="lead glowable">
-
-		</p>
-
+		<h3>
+			Select target folder
+		</h3>
+		<div class="list-group">
+			<span class="list-group-item active" id="chosenDirectory"></span>
+		</div>
+		<br />
 		<form>
 			<div class="input-group mb-3">
-				<input type="text" class="form-control glowable" id="directoryNamePattern" placeholder="Type to filter folders..." />
+				<input type="text" class="form-control glowable" id="directoryNamePatternd" placeholder="Type to filter folders..." />
 			</div>
 		</form>
 		<div class="list-group">
-			<a href="#" class="list-group-item list-group-item-action" id="rootDirectorySelector">&#47;</a>
+			<a href="#" class="list-group-item list-group-item-action" id="rootDirectorySelector"></a>
 			<div id="directories"></div>
 		</div>
 
 		<div class="ml-1">&nbsp;</div>
 
-		<h2>
-			Target filename <small><a href="javascript:void(0);" id ="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
-		</h2>
+		<h3>
+			Enter target filename <small><a href="javascript:void(0);" id ="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
+		</h3>
 		
 		<div class="list-group" id="newFileNameSuggestions">
 			
