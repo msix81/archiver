@@ -30,7 +30,6 @@
 			var suggestionEditFieldsElm = $('#suggestionEditFields');
 			var suggestionTestElm = $('#suggestionTest');
 			
-			
 
 			// --------------------------- onload functionality
 			loadConfig(function() {renderSuggestions()});
@@ -150,6 +149,12 @@
 					suggestionTestElm.addClass('btn-danger');
 				}
 			});
+			$('#suggestionDebug').click(function(evt) {
+				var regex = suggestionPatternElm.val();
+				var text = suggestionExampleElm.val();
+				var url = 'https://regex101.com/?regex=' + regex + '&testString=' + text;
+				window.open(url, '_blank').focus();
+			});
 			
 			// --------------------------- functions
 			function switchSuggestionOrders(deltaToSwitchWith) {
@@ -256,6 +261,15 @@
 		<h5>
 			File and folder suggestions
 		</h5>
+		
+		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion" title="Add record">New record</a>
+
+		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions" title="Export all records into a file">Export all...</a>
+		
+		<a class="btn btn-secondary" href="#" role="button" id="importSuggestions" title="Replace all existing records by those from a file">Import all...</a>
+	
+		<div class="ml-1">&nbsp;</div>
+
 		<form id="suggestionsForm">
 			<div class="list-group" id="suggestionsList">
 			</div>
@@ -283,7 +297,10 @@
 					</div>
 					<input type="text" class="form-control glowable" id="suggestionPattern" placeholder="Regular expression to identify the input file" />
 					<div class="input-group-append">
-						<button id="suggestionTest" class="btn btn-secondary" type="button">?</button>
+						<button id="suggestionTest" class="btn btn-secondary" type="button" title="Test example file name against pattern">?</button>
+					</div>
+					<div class="input-group-append">
+						<button id="suggestionDebug" class="btn btn-secondary" type="button" title="Open Regex101 to debug example file name and pattern">r101</button>
 					</div>
 				</div>
 				<div class="input-group mb-3">
@@ -333,14 +350,6 @@
 			<input id="importSuggestionsFile" type="file" style="display: none" />
 		</form>
 
-		<div class="ml-1">&nbsp;</div>
-
-		<a class="btn btn-secondary" href="#" role="button" id="addSuggestion" title="Add record">New record</a>
-
-		<a class="btn btn-secondary" href="#" role="button" id="exportSuggestions" title="Export all records into a file">Export all...</a>
-		
-		<a class="btn btn-secondary" href="#" role="button" id="importSuggestions" title="Replace all existing records by those from a file">Import all...</a>
-	
 		<div class="ml-1">&nbsp;</div>
 		
 		<h5>
