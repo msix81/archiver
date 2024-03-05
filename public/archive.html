@@ -26,6 +26,7 @@
 			var newFileNameElm = $('#newFileName');
 			var rootDirectorySelectorElm = $('#rootDirectorySelector');
 			var suggestedFileNameDateSpinElm = $('#suggestedFileNameDateSpin');
+			var newSuggestionWithTemplateElm = $('#newSuggestionWithTemplate');
 			
 			loadQueue();
 			loadConfig();
@@ -77,6 +78,13 @@
 					suggestedFileNameDateSpinElm.hide();
 				}
 			});
+			newSuggestionWithTemplateElm.click(function(evt){
+				window.location.href = 'settings.html'
+					+ '?suggestion_example=' + encodeURI(chosenUnencryptedFile) 
+					+ '&suggestion_filename=' + encodeURI(newFileNameElm.val()) 
+					+ '&suggestion_foldername=' + encodeURI(chosenDirectory);
+			});
+
 			rootDirectorySelectorElm.html(indentionPrefix + '/');
 		
 
@@ -336,11 +344,6 @@
 				});
 			}
 			
-			function smoothScroll(elm) {
-				$('html, body').animate({
-					scrollTop: elm.offset().top - 60
-				}, 700);
-			}
 		});
 		
 	</script>
@@ -426,7 +429,8 @@
 		</form>
 	
 		<a class="btn btn-primary" href="#" role="button" id="archive">Archive</a>
-		
+		<a a href="javascript:void(0);" id="newSuggestionWithTemplate" class="float-right">Use as new suggestion</a>
+	
 		<div class="ml-1">&nbsp;</div>
 	</main><!-- /.container -->
 </body>

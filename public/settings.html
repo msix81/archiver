@@ -32,7 +32,38 @@
 			
 
 			// --------------------------- onload functionality
-			loadConfig(function() {renderSuggestions()});
+			loadConfig(function() {
+			
+				// check whether page has been called with new suggestion template
+				const params = new Proxy(new URLSearchParams(window.location.search), {
+					get: (searchParams, prop) => searchParams.get(prop),
+				});
+				
+				// if yes, add this template
+				if (params.suggestion_example && params.suggestion_filename && params.suggestion_foldername) {
+					console.log('Suggestion handed over via link');
+					var newSuggestionId = Date.now();
+					suggestions.push({
+						id: newSuggestionId,
+						name: "+++ New entry +++",
+						pattern: params.suggestion_example,
+						example: params.suggestion_example,
+						filename: params.suggestion_filename,
+						foldername: params.suggestion_foldername,
+						order: 0
+					});
+					
+					// display suggestions
+					renderSuggestions();
+
+					$('#suggestion-id-' + newSuggestionId).trigger('click');
+					
+					smoothScroll(suggestionEditFieldsElm);
+				// otherwise just display suggestions
+				} else {
+					renderSuggestions();
+				}
+			});
 
 			// binds
 			$('#renewCache').click(function(evt) {

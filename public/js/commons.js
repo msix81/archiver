@@ -24,3 +24,9 @@ function checkSuggestion(whatToLookFor, whatToSearchIn) {
 	var matches = new RegExp(whatToLookFor, 'gm').exec(whatToSearchIn); 
 	return matches && matches.length > 0;
 }
+
+function smoothScroll(elm) {
+	$('html, body').animate({
+		scrollTop: elm.offset().top - 60
+	}, 700);
+}
