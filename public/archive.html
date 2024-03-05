@@ -161,11 +161,7 @@
 					
 					// auto-populate filename
 					if (suggestions.filename) {
-						newFileNameElm.val(suggestions.filename);
-						
-						// auto-select date in suggestion
-						autoSelectDate(newFileNameElm);
-						
+						newFileNameElm.val(suggestions.filename);						
 						makeGlow(newFileNameElm);
 					}
 				}	else {
@@ -306,6 +302,9 @@
 									suggestSearchPatternAndFilename(fileNameWithoutExtension);
 									newFileNameSuggestionsElm.slideUp();
 									suggestedFileNameDateSpinElm.hide();
+									
+									// auto-select date in suggestion
+									autoSelectDate(newFileNameElm);
 								});
 								
 								newFileNameSuggestionsElm.append(elm);
