@@ -15,7 +15,6 @@
 		var chosenUnencryptedFile = null;
 		var chosenDirectory = null;
 		var timer;
-		var allowDateSpinner = false;
 		var indentionPrefix = '<span class="indention">&#9657; </span>';
 
 		$(document).ready(function() {
@@ -62,20 +61,23 @@
 			$('#suggestedFileNameDateDec').click(function(evt) {
 				spinDate(-1);
 			});
+			$('#suggestedFileNameDateSelect').click(function(evt) {
+				autoSelectDate(newFileNameElm);
+			});
 			newFileNameSuggestionsLinkElm.click(function(evt) {
 				newFileNameSuggestionsElm.slideToggle();
 				smoothScroll($('#target-file-name'));
 			});
-			rootDirectorySelectorElm.html(indentionPrefix + '/')
-			document.onselectionchange = function() {
-				var x = newFileNameElm.get(0);
-				if (allowDateSpinner && (x.selectionStart > 0) && (x.selectionStart != x.selectionEnd)) {
+			newFileNameElm.on('change input', function() {
+
+				// calculate hiding or showing of spinner
+				if (re = textContainsDate($(this).val())) {
 					suggestedFileNameDateSpinElm.show();
 				} else {
 					suggestedFileNameDateSpinElm.hide();
 				}
-				
-			};
+			});
+			rootDirectorySelectorElm.html(indentionPrefix + '/');
 		
 
 			// --------------------------- functions
@@ -93,7 +95,7 @@
 						case 7: newDate.setMonth(selectedDate.getMonth() + offset); replaceBy = newDate.getFullYear() + '-' + twoDigits(newDate.getMonth() + 1); break;
 						case 10: newDate.setDate(selectedDate.getDate() + offset); replaceBy = newDate.getFullYear() + '-' + twoDigits(newDate.getMonth() + 1) + '-' + twoDigits(newDate.getDate()); break;
 					}
-					newFileNameElm.val(oldFileName.substr(0, selectionStart) + replaceBy + oldFileName.substr(selectionEnd));
+					newFileNameElm.val(oldFileName.substr(0, selectionStart) + replaceBy + oldFileName.substr(selectionEnd)).change();
 					autoSelectDate(newFileNameElm);
 				}
 			}
@@ -137,10 +139,8 @@
 				if (fileName != null) {
 					suggestSearchPatternAndFilename(fileName);
 				} else {
-					newFileNameElm.val('');
+					newFileNameElm.val('').change();
 				}
-				
-				suggestedFileNameDateSpinElm.hide();
 			}
 			
 			function suggestSearchPatternAndFilename(fileName) {
@@ -161,24 +161,24 @@
 					
 					// auto-populate filename
 					if (suggestions.filename) {
-						newFileNameElm.val(suggestions.filename);						
+						newFileNameElm.val(suggestions.filename).change();						
 						makeGlow(newFileNameElm);
 					}
 				}	else {
-					newFileNameElm.val(fileName);
-					allowDateSpinner = false;
+					newFileNameElm.val(fileName).change();
 				}
 			}
 			
 			function autoSelectDate(elm) {
-				if (re = new RegExp('(?<full>20[0-9]{2}(\-(?<mm>0[1-9]|1[0-9])){0,1}(\-(?<dd>0[1-9]|1[0-9]|2[0-9]|3[0-1])){0,1})', 'gm').exec(elm.val())) {
-					allowDateSpinner = true;
+				if (re = textContainsDate(elm.val())) {
 					elm.focus();
 					elm.get(0).selectionStart = re.index;
 					elm.get(0).selectionEnd = re.index + re.groups.full.length;
-				} else {
-					allowDateSpinner = false;
 				};
+			}
+			
+			function textContainsDate(txt) {
+				return new RegExp('(?<full>20[0-9]{2}(\-(?<mm>0[1-9]|1[0-9])){0,1}(\-(?<dd>0[1-9]|1[0-9]|2[0-9]|3[0-1])){0,1})', 'gm').exec(txt);
 			}
 
 			function guessSearchPatternAndFilenameSuggestion(unencryptedFileName) {
@@ -301,7 +301,6 @@
 									var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
 									suggestSearchPatternAndFilename(fileNameWithoutExtension);
 									newFileNameSuggestionsElm.slideUp();
-									suggestedFileNameDateSpinElm.hide();
 									
 									// auto-select date in suggestion
 									autoSelectDate(newFileNameElm);
@@ -416,9 +415,10 @@
 		<form>
 			<div class="input-group mb-3">
 				<div class="input-group-prepend" id="suggestedFileNameDateSpin" style="display:none">
-					<span class="input-group-text">&#x1F4C5; &nbsp;
+					<span class="input-group-text">
+					<a href="javascript:void(0);" id="suggestedFileNameDateSelect">&#x1F4C5;</a>&nbsp;
 					<a href="javascript:void(0);" id="suggestedFileNameDateInc">&uarr;</a>&nbsp;
-					<a href="javascript:void(0);" id="suggestedFileNameDateDec">&darr;</a>
+					<a href="javascript:void(0);" id="suggestedFileNameDateDec">&darr;</a></span>
 				</div>
 				<input type="text" class="form-control glowable" id="newFileName" placeholder="New filename" autocomplete="off" />
 			</div>
