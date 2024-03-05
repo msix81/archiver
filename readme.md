@@ -20,11 +20,12 @@ docker push <Docker Hub user>/archiver
 4. Start the container on your desired machine:
 ```
 docker run -d \
-	-v '/home/pi/archiver-in:/archiver-in' \
-	-v '/home/pi/archiver-out:/archiver-out' \
+	-v '<full folder path to read files from>:/archiver-in' \
+	-v '<full folder path to archive files to>:/archiver-out' \
 	--env ARCHIVER_PASSWORD='desired-login-password' \
 	--env ARCHIVER_SECRET='put-a-secret-string-here' \
 	--env ARCHIVER_GPGPKID='id of the GPG public key you provided in the container' \
+	--env ARCHIVER_SETTINGSFILE='full name of Archiver settingsfile to load after login (optional)' \
 	--restart unless-stopped \
 	-p <your desired port>:8080
 	<Docker Hub user>/archiver

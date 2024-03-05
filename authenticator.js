@@ -23,6 +23,10 @@ let login = (req, res) => {
 
 	if (password && (password === config.password)) {
 		let token = jwt.sign({}, config.secret, { expiresIn: '24h'});
+		
+		// try to load settings from file automatically
+		config.tryToLoadSettingsFromFile();
+		
 		res.json({token: token});
 	} else {
 		res.status(403).send('error during authentication');
