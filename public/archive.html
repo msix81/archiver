@@ -170,7 +170,11 @@
 						applySuggestion(matchingSuggestion);
 					} else {
 						newFileNameElm.val(fileName).change();
+						makeGlow(newFileNameElm);
 					}
+				} else {
+					newFileNameElm.val(fileName).change();
+					makeGlow(newFileNameElm);
 				}
 			}
 			
@@ -264,17 +268,9 @@
 							$.each(fileNames, function(i, fileName) {
 								var caption = '&#9657; ' + ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+									.on('click', function() {chooseExistingFilename(fileName)})
 									.append('<small/>')
 									.append(caption);
-								
-								elm.click(function() {
-									var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
-									suggestSearchPatternAndFilename(fileNameWithoutExtension);
-									newFileNameSuggestionsElm.slideUp();
-									
-									// auto-select date in suggestion
-									autoSelectDate(newFileNameElm);
-								});
 								
 								newFileNameSuggestionsElm.append(elm);
 							});
@@ -289,6 +285,15 @@
 						}
 					}
 				});
+			}
+			
+			function chooseExistingFilename(fileName) {
+				var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
+				suggestSearchPatternAndFilename(fileNameWithoutExtension);
+				newFileNameSuggestionsElm.slideUp();
+				
+				// auto-select date in suggestion
+				autoSelectDate(newFileNameElm);
 			}
 			
 			function twoDigits(i) {
@@ -322,7 +327,7 @@
 							var elm = $('<span class="badge badge-secondary">')
 								.append('<a href="javascript:void(0)" />')
 								.on('click', function() {applySuggestion(suggestion)})
-								.append(suggestion.name);
+								.append('#' + suggestion.name);
 							favoriteSuggestionsListElm.append(elm).append(' ');
 						}
 					});
@@ -358,20 +363,16 @@
 					appliedSuggestion.foldername = folderSuggestion;
 
 					// auto-populate search pattern
-					if (appliedSuggestion.foldername) {
-						directoryNamePatternElm
-							.val(appliedSuggestion.foldername)
-							.trigger('input');
-						makeGlow(directoryNamePatternElm);
-					}
+					directoryNamePatternElm
+						.val(appliedSuggestion.foldername || '')
+						.trigger('input');
+					makeGlow(directoryNamePatternElm);
 					
 					// auto-populate filename
-					if (appliedSuggestion.filename) {
-						newFileNameElm
-							.val(appliedSuggestion.filename)
-							.change();						
-						makeGlow(newFileNameElm);
-					}
+					newFileNameElm
+						.val(appliedSuggestion.filename ? appliedSuggestion.filename : '')
+						.change();						
+					makeGlow(newFileNameElm);
 				}
 			}
 			
@@ -384,7 +385,7 @@
 	
 	<!-- Navigation -->
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-		<a class="navbar-brand" href="/">Archiver</a>
+		<a class="navbar-brand" href="archive.html">Archiver</a>
 		
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -422,16 +423,18 @@
 		<div class="list-group" id="unencryptedFiles">
 			none
 		</div>
-
+		
+		<div class="ml-1">&nbsp;</div>
+		
+		<!-- Favorite suggestion selection -->
+		<div id="favoriteSuggestionsList"></div>
+		
 		<div class="ml-1">&nbsp;</div>
 		
 		<!-- Target selection -->
 		<h3>
 			<a name="target-folder" id="target-folder"></a>Select target folder 
 		</h3> 
-		
-		<!-- Favorite suggestion selection -->
-		<div id="favoriteSuggestionsList"></div>
 
 		<!-- Target folder selection -->
 		<div class="list-group">
