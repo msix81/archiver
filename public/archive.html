@@ -27,9 +27,10 @@
 			var rootDirectorySelectorElm = $('#rootDirectorySelector');
 			var suggestedFileNameDateSpinElm = $('#suggestedFileNameDateSpin');
 			var newSuggestionWithTemplateElm = $('#newSuggestionWithTemplate');
+			var favoriteSuggestionsListElm = $('#favoriteSuggestionsList');
 			
 			loadQueue();
-			loadConfig();
+			loadConfig(renderFavoriteSuggestions);
 			chooseSubdirectory('/');
 
 			// binds
@@ -362,11 +363,74 @@
 				});
 			}
 			
+			function renderFavoriteSuggestions() {
+				if (typeof suggestions !== 'undefined') {
+					$.each(suggestions, function(i, suggestion) {
+						if (suggestion.isFavorite) {
+							var elm = $('<span class="badge badge-secondary">')
+								.append('<a href="javascript:void(0)" />')
+								.on('click', function() {applySuggestion(suggestion)})
+								.append(suggestion.name);
+							favoriteSuggestionsListElm.append(elm).append(' ');
+						}
+					});
+				}
+			}
+			
+			function applySuggestion(suggestion) {
+				
+				if (suggestion) {
+					
+					// make a copy to calculate dynamic values of suggestion
+					var appliedSuggestion = {...suggestion};
+	
+					// get unparsed suggestions
+					var filenameSuggestion = suggestion.filename || '';
+					var folderSuggestion = suggestion.foldername || '';
+
+					// need to reexecute pattern match to get capturing groups
+					var matches = new RegExp(suggestion.pattern, 'gm').exec(suggestion.filename) || {}; 
+
+					// inject now into named groups
+					var now = new Date();
+					var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:month-1': twoDigits(now.getMonth() + 1 - 1), 'now:date': twoDigits(now.getDate())}};
+					Object.keys(replacePatternAndValues).forEach(pattern => {
+
+						// ...in filename
+						filenameSuggestion = filenameSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
+
+						// ...in search pattern
+						folderSuggestion = folderSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
+					});
+					appliedSuggestion.filename = filenameSuggestion;
+					appliedSuggestion.foldername = folderSuggestion;
+
+					// auto-populate search pattern
+					if (appliedSuggestion.foldername) {
+						directoryNamePatternElm
+							.val(appliedSuggestion.foldername)
+							.trigger('input');
+						makeGlow(directoryNamePatternElm);
+					}
+					
+					// auto-populate filename
+					if (appliedSuggestion.filename) {
+						newFileNameElm
+							.val(appliedSuggestion.filename)
+							.change();						
+						makeGlow(newFileNameElm);
+					}
+				}
+			}
+			
+			
 		});
 		
 	</script>
 </head>
 <body>
+	
+	<!-- Navigation -->
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 		<a class="navbar-brand" href="/">Archiver</a>
 		
@@ -386,7 +450,10 @@
 		</div>
 	</nav>
 
+	<!-- Content -->
 	<main role="main" class="container">
+	
+		<!-- Alerts -->
 		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
 			File successfully archived!
 		</div>
@@ -395,9 +462,9 @@
 			Error occurred!
 		</div>
 
-		
+		<!-- Source file selection -->
 		<h3>
-			Select source file
+			Select file
 		</h3>
 		
 		<div class="list-group" id="unencryptedFiles">
@@ -406,9 +473,15 @@
 
 		<div class="ml-1">&nbsp;</div>
 		
+		<!-- Target selection -->
 		<h3>
-			<a name="target-folder" id="target-folder"></a>Select target folder
-		</h3>
+			<a name="target-folder" id="target-folder"></a>Select target folder 
+		</h3> 
+		
+		<!-- Favorite suggestion selection -->
+		<div id="favoriteSuggestionsList"></div>
+
+		<!-- Target folder selection -->
 		<div class="list-group">
 			<span class="list-group-item active" id="chosenDirectory"></span>
 		</div>
@@ -425,13 +498,12 @@
 
 		<div class="ml-1">&nbsp;</div>
 
+		<!-- Target file name -->
 		<h3>
 			<a name="target-file-name" id="target-file-name"></a>Enter target file name <small><a href="javascript:void(0);" id="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
 		</h3>
 		
-		<div class="list-group" id="newFileNameSuggestions">
-			
-		</div>
+		<div class="list-group" id="newFileNameSuggestions"></div>
 
 		<form>
 			<div class="input-group mb-3">
@@ -443,13 +515,13 @@
 				</div>
 				<input type="text" class="form-control glowable" id="newFileName" placeholder="New filename" autocomplete="off" />
 			</div>
-
 		</form>
 	
+		<!-- Buttons -->
 		<a class="btn btn-primary" href="#" role="button" id="archive">Archive</a>
 		<a a href="javascript:void(0);" id="newSuggestionWithTemplate" class="float-right">Use as new suggestion</a>
 	
 		<div class="ml-1">&nbsp;</div>
-	</main><!-- /.container -->
+	</main>
 </body>
 </html>
