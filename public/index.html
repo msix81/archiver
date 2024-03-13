@@ -16,14 +16,7 @@
 
 			// binds
 			$('#login').submit(function(evt) {
-				var password = $('#password').val();
-				
-				if (password) {
-					login(password);
-				} else {
-					$('#invalidparamsmessage').show();
-				}
-				
+				login($('#password').val());
 				evt.preventDefault();
 			});
 			
@@ -53,6 +46,9 @@
 			if (queryDict.pc) {
 				$('#password').val(atob(queryDict.pc));
 			}
+			if (queryDict.tokenexpired) {
+				$('#tokenexpired').show();
+			}
 		});
 		
 	</script>
@@ -66,7 +62,9 @@
 		<div class="alert alert-danger" role="alert" id="invalidparamsmessage" style="display:none">
 			Error during login!
 		</div>
-		
+		<div class="alert alert-danger" role="alert" id="tokenexpired" style="display:none">
+			Token expired, please re-login.
+		</div>
 		<form id="login">
 		  <div class="form-group row">
 			<label for="password" class="col-sm-2 col-form-label">Password</label>

@@ -1,8 +1,10 @@
 var basePathBackend = '';
 var suggestions = [];
+const TOKENEXPIRED = 'TOKENEXPIRED';
 
-function logout() {
-	document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;domain=sintra;path=/";
+function logout(reason) {
+	document.cookie = "token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;domain=;path=/";
+	location.href = '/' + ((reason == TOKENEXPIRED) ? '?tokenexpired=1' : '');
 }
 
 function loadConfig(onComplete) {

@@ -72,6 +72,11 @@
 					url: basePathBackend + '/archive/update-directory-cache?depth=25',
 					success: function(){
 						$('#successmessage').show().delay(4000).slideUp(400, function() {window.location.reload()});
+					},
+					error: function(err) {
+						if (err.status == 401) {
+							logout(TOKENEXPIRED);
+						}
 					}
 				});
 			});
@@ -226,6 +231,11 @@
 					success: function(){
 						$('#suggestionsForm input').val('');
 						$('#successmessage').show().delay(4000).slideUp();
+					},
+					error: function(err) {
+						if (err.status == 401) {
+							logout(TOKENEXPIRED);
+						}
 					}
 				});
 			}
