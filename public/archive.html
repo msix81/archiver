@@ -21,8 +21,8 @@
 			var unencryptedFilesElm = $('#unencryptedFiles');
 			var directoriesElm = $('#directories');
 			var directoryNamePatternElm = $('#directoryNamePattern');
-			var newFileNameSuggestionsElm = $('#newFileNameSuggestions');
-			var newFileNameSuggestionsLinkElm = $('#newFileNameSuggestionsLink');
+			var existingFileNamesListElm = $('#existingFileNamesList');
+			var existingFileNamesListLinkElm = $('#existingFileNamesListLink');
 			var newFileNameElm = $('#newFileName');
 			var rootDirectorySelectorElm = $('#rootDirectorySelector');
 			var suggestedFileNameDateSpinElm = $('#suggestedFileNameDateSpin');
@@ -67,8 +67,8 @@
 			$('#suggestedFileNameDateSelect').on('click', function(evt) {
 				autoSelectDate(newFileNameElm);
 			});
-			newFileNameSuggestionsLinkElm.on('click', function(evt) {
-				newFileNameSuggestionsElm.slideToggle();
+			existingFileNamesListLinkElm.on('click', function(evt) {
+				existingFileNamesListElm.slideToggle();
 				smoothScroll($('#target-file-name'));
 			});
 			newFileNameElm.on('change input', function() {
@@ -249,28 +249,27 @@
 			}
 			
 			function loadExistingFileNamesAsSuggestions(directoryName) {
-				newFileNameSuggestionsElm.hide();
-				newFileNameSuggestionsLinkElm.hide();
+				existingFileNamesListElm.hide();
+				existingFileNamesListLinkElm.hide();
 				
 				$.ajax({
 					type: 'GET',
 					url: basePathBackend + '/archive/' + encodeURIComponent(directoryName) + '/file',
 					success: function(fileNames){
-						newFileNameSuggestionsElm.empty();
+						existingFileNamesListElm.empty();
 						
 						if (fileNames.length > 0) {
 							$.each(fileNames, function(i, fileName) {
-								var caption = '&#9657; ' + ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
-								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
+								var elm = $('<span class="badge badge-secondary">')
+									.append('<a href="javascript:void(0)" />')
 									.on('click', function() {chooseExistingFilename(fileName)})
-									.append('<small/>')
 									.append(caption);
-								
-								newFileNameSuggestionsElm.append(elm);
+								existingFileNamesListElm.append(elm).append(' ');
 							});
-							newFileNameSuggestionsLinkElm.show();
+							existingFileNamesListLinkElm.show();
 						} else {
-							newFileNameSuggestionsLinkElm.hide();
+							existingFileNamesListLinkElm.hide();
 						}
 					},
 					error: function(err) {
@@ -284,7 +283,7 @@
 			function chooseExistingFilename(fileName) {
 				var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
 				suggestSearchPatternAndFilename(fileNameWithoutExtension);
-				newFileNameSuggestionsElm.slideUp();
+				existingFileNamesListElm.slideUp();
 				
 				// auto-select date in suggestion
 				autoSelectDate(newFileNameElm);
@@ -449,11 +448,11 @@
 
 		<!-- Target file name -->
 		<h3>
-			<a name="target-file-name" id="target-file-name"></a>Enter target file name <small><a href="javascript:void(0);" id="newFileNameSuggestionsLink">Use existing as template &#9660;</a></small>
+			<a name="target-file-name" id="target-file-name"></a>Enter target file name <small><a href="javascript:void(0);" id="existingFileNamesListLink">&#9660;</a></small>
 		</h3>
 		
-		<div class="list-group" id="newFileNameSuggestions"></div>
-
+		<div id="existingFileNamesList"></div>
+		
 		<form>
 			<div class="input-group mb-3">
 				<div class="input-group-prepend" id="suggestedFileNameDateSpin" style="display:none">
