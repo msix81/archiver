@@ -84,6 +84,9 @@
 					}
 				});
 			});
+			$('#reloadConfiguration').on('click', function(evt) {
+				loadConfig(function() {$('#reloadsuccessmessage').show().delay(4000).slideUp(400);});
+			});
 			saveSuggestionElm.on('click', function(evt) {
 			
 				// update locally
@@ -327,18 +330,26 @@
 	</nav>
 
 	<main role="main" class="container">
+
+		<!-- Alerts -->
 		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
 			Configuration updated successfully!
+		</div>
+		
+		<div class="alert alert-success" role="alert" id="reloadsuccessmessage" style="display:none">
+			Configuration reloaded!
 		</div>
 
 		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
 			Error occurred!
 		</div>
 
+		<!-- Suggestions Settings -->
 		<h3>
 			Target suggestions
 		</h3>
 		
+		<!-- Button bar -->
 		<a class="btn btn-light" href="#" role="button" id="addSuggestion" title="Add record">New</a>
 
 		<a class="btn btn-light" href="#" role="button" id="exportSuggestions" title="Export all records into a file">Export all...</a>
@@ -348,11 +359,14 @@
 		<div class="ml-1">&nbsp;</div>
 
 		<form id="suggestionsForm">
+		
+			<!-- Existing Suggestions -->
 			<div class="list-group" id="suggestionsList">
 			</div>
 			
 			<div class="ml-1">&nbsp;</div>
 			
+			<!-- Suggestion Form -->
 			<div id="suggestionEditFields" style="display: none" class="card card-body">
 				<h5>Edit suggestion "<span id="suggestionTitle"></span>"</h5><br />
 				<input type="hidden" id="suggestionId" />
@@ -435,12 +449,21 @@
 
 		<div class="ml-1">&nbsp;</div>
 		
+		<!-- Folder cache settings -->
 		<h3>
 			Folder cache
 		</h3>
 		<a class="btn btn-light" href="#" role="button" id="renewCache" title="Purge directory cache and reload from disk">Rebuild folder cache</a>
 		
 		<div class="ml-1">&nbsp;</div>
-	</main><!-- /.container -->
+		
+		<!-- Configuration cache settings -->
+		<h3>
+			Configuration cache
+		</h3>
+		<a class="btn btn-light" href="#" role="button" id="reloadConfiguration" title="Purge configuration cache and reload from disk">Reload configuration cache</a>
+		
+		<div class="ml-1">&nbsp;</div>
+	</main>
 </body>
 </html>
