@@ -18,6 +18,11 @@ function loadConfig(onComplete) {
 			if (onComplete !== undefined) {
 				onComplete();
 			}
+		},
+		error: function(err) {
+			if (err.status == 401) {
+				logout(TOKENEXPIRED);
+			}
 		}
 	});;
 }
