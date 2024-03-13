@@ -60,7 +60,6 @@
 
 					$('#suggestion-id-' + newSuggestionId).trigger('click');
 					
-					smoothScroll(suggestionEditFieldsElm);
 				// otherwise just display suggestions
 				} else {
 					renderSuggestions();
@@ -198,25 +197,7 @@
 				var url = 'https://regex101.com/?regex=' + regex + '&testString=' + text;
 				window.open(url, '_blank').focus();
 			});
-			$('#cloneSuggestion').on('click', function(evt) {
-				var newSuggestionId = Date.now();
-				
-				// update locally, then render
-				suggestions.push({
-					id: newSuggestionId,
-					name: "+++ Cloned entry +++",
-					pattern: suggestionPatternElm.val(),
-					example: suggestionExampleElm.val(),
-					filename: suggestionFilenameElm.val(),
-					foldername: suggestionFoldernameElm.val(),
-					order: 0,
-					isFavorite: suggestionIsFavoriteElm.prop('checked')
-				});
-				
-				renderSuggestions();
-				
-				$('#suggestion-id-' + newSuggestionId).trigger('click');
-			});
+			$('#cloneSuggestion').on('click', function() {cloneSuggestion()});
 			
 			// --------------------------- functions
 			function switchSuggestionOrders(deltaToSwitchWith) {
@@ -254,47 +235,72 @@
 				
 				$.each(suggestions.sort((a,b) => (a.order > b.order) ? 1 : ((b.order > a.order) ? -1 : 0)), function(index, suggestion) {
 					var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" id="suggestion-id-' + suggestion.id + '" />')
+						.on('click', function() { selectSuggestion(index, suggestion); })
 						.append(suggestion.name);
-						
-					elm.click(function() {
-						$('#suggestionTitle').text(suggestion.name);
-						suggestionsListElm.children().removeClass('active');
-						elm.addClass('active');
-
-						try {
-							suggestionIdElm.data('index', index);
-							suggestionIdElm.val(suggestion.id);
-							suggestionOrderElm.val(suggestion.order);
-							suggestionNameElm.val(suggestion.name);
-							suggestionExampleElm.val(suggestion.example);
-							suggestionPatternElm.val(suggestion.pattern);
-							suggestionFilenameElm.val(suggestion.filename);
-							suggestionFoldernameElm.val(suggestion.foldername);
-							suggestionIsFavoriteElm.prop('checked', suggestion.isFavorite);
-						} catch (err) {
-							throw new Error('no valid suggestion format');
-						}
-						
-						if (suggestionIdElm.data('index') < suggestions.length - 1) {
-							downgradeSuggestionElm.show();
-						} else {
-							downgradeSuggestionElm.hide();
-						}
-						if (suggestionIdElm.data('index') > 0) {
-							upgradeSuggestionElm.show();
-						} else {
-							upgradeSuggestionElm.hide();
-						}
-						suggestionEditFieldsElm.show();
-						
-						suggestionNameElm.select();
-					});
 					
 					suggestionsListElm.append(elm);
 				});
 			}
 			
+			function cloneSuggestion() {
+				var newSuggestionId = Date.now();
+				
+				// update locally, then render
+				suggestions.push({
+					id: newSuggestionId,
+					name: "+++ Cloned entry +++",
+					pattern: suggestionPatternElm.val(),
+					example: suggestionExampleElm.val(),
+					filename: suggestionFilenameElm.val(),
+					foldername: suggestionFoldernameElm.val(),
+					order: 0,
+					isFavorite: (suggestionIsFavoriteElm.prop('checked') == true)
+				});
+				
+				renderSuggestions();
+				
+				$('#suggestion-id-' + newSuggestionId).trigger('click');
+			}
 			
+			function selectSuggestion(index, suggestion) {
+				suggestionsListElm.children().removeClass('active');
+				$('#suggestion-id-' + suggestion.id).addClass('active');
+				loadSelectionForm(index, suggestion);
+			}
+			
+			function loadSelectionForm(index, suggestion) {
+				$('#suggestionTitle').text(suggestion.name);
+
+				try {
+					suggestionIdElm.data('index', index);
+					suggestionIdElm.val(suggestion.id);
+					suggestionOrderElm.val(suggestion.order);
+					suggestionNameElm.val(suggestion.name);
+					suggestionExampleElm.val(suggestion.example);
+					suggestionPatternElm.val(suggestion.pattern);
+					suggestionFilenameElm.val(suggestion.filename);
+					suggestionFoldernameElm.val(suggestion.foldername);
+					suggestionIsFavoriteElm.prop('checked', suggestion.isFavorite == true);
+				} catch (err) {
+					throw new Error('no valid suggestion format: ' + err);
+				}
+				
+				if (suggestionIdElm.data('index') < suggestions.length - 1) {
+					downgradeSuggestionElm.show();
+				} else {
+					downgradeSuggestionElm.hide();
+				}
+				if (suggestionIdElm.data('index') > 0) {
+					upgradeSuggestionElm.show();
+				} else {
+					upgradeSuggestionElm.hide();
+				}
+				suggestionEditFieldsElm.show();
+				
+				suggestionNameElm.select();
+				
+				smoothScroll(suggestionEditFieldsElm);
+			}
 			
 		});
 		
@@ -351,6 +357,10 @@
 				<h5>Edit suggestion "<span id="suggestionTitle"></span>"</h5><br />
 				<input type="hidden" id="suggestionId" />
 				<input type="hidden" id="suggestionOrder" />
+				<div class="form-group form-check mb-3">
+					<input type="checkbox" class="form-check-input glowable" id="suggestionIsFavorite" placeholder="Favorite suggestion to be displayed for manual selection" />
+					<label class="form-check-label" for="suggestionIsFavorite">Favorite</label>
+				</div>
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
 						<span class="input-group-text">Description:</span>
@@ -409,10 +419,6 @@
 						</p>
 					</p>
 				</small>
-				<div class="form-group form-check mb-3">
-					<input type="checkbox" class="form-check-input glowable" id="suggestionIsFavorite" placeholder="Favorite suggestion to be displayed for manual selection" />
-					<label class="form-check-label" for="suggestionIsFavorite">Favorite</label>
-				</div>
 				<a class="btn btn-light" href="#" role="button" id="upgradeSuggestion" title="Move record one up">&uarr;</a>
 				
 				<a class="btn btn-light" href="#" role="button" id="downgradeSuggestion" title="Move record one down">&darr;</a>
