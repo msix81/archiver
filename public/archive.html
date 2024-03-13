@@ -164,7 +164,7 @@
 					var matchingSuggestion = suggestions.find(function(suggestion) {return checkSuggestion(suggestion.pattern, fileName)});
 					
 					if (matchingSuggestion){
-						applySuggestion(matchingSuggestion);
+						applySuggestion(matchingSuggestion, fileName);
 					} else {
 						newFileNameElm.val(fileName).change();
 						makeGlow(newFileNameElm);
@@ -319,7 +319,7 @@
 						if (suggestion.isFavorite) {
 							var elm = $('<span class="badge badge-secondary">')
 								.append('<a href="javascript:void(0)" />')
-								.on('click', function() {applySuggestion(suggestion)})
+								.on('click', function() {applySuggestion(suggestion, chosenUnencryptedFile)})
 								.append('#' + suggestion.name);
 							favoriteSuggestionsListElm.append(elm).append(' ');
 						}
@@ -327,7 +327,7 @@
 				}
 			}
 			
-			function applySuggestion(suggestion) {
+			function applySuggestion(suggestion, unencryptedFileName) {
 				
 				if (suggestion) {
 					
@@ -338,8 +338,8 @@
 					var filenameSuggestion = suggestion.filename || '';
 					var folderSuggestion = suggestion.foldername || '';
 
-					// need to reexecute pattern match to get capturing groups
-					var matches = new RegExp(suggestion.pattern, 'gm').exec(suggestion.filename) || {}; 
+					// need to reexecute pattern match to get named capturing groups
+					var matches = new RegExp(suggestion.pattern, 'gm').exec(unencryptedFileName) || {}; 
 
 					// inject now into named groups
 					var now = new Date();
