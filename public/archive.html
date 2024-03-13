@@ -124,17 +124,8 @@
 							$.each(fileNames, function(i, fileName) {
 								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
+									.on('click', function() { chooseFile(fileName, $(this)) })
 									.append(indentionPrefix + caption);
-									
-								elm.click(function() {
-									chooseFile(fileName);
-									elm.html(indentionPrefix + fileName.replace(/.{40}/g, "$&" + "<br />"));
-									unencryptedFilesElm.children().removeClass('active');
-									unencryptedFilesElm.find('.indention').show();
-									elm.addClass('active');
-									elm.children('.indention').hide();
-									smoothScroll($('#target-folder'));
-								});
 								
 								unencryptedFilesElm.append(elm);
 							});
@@ -148,11 +139,17 @@
 				});
 			}
 			
-			function chooseFile(fileName) {
+			function chooseFile(fileName, fileElm) {
 				chosenUnencryptedFile = fileName;
 				
 				if (fileName != null) {
 					suggestSearchPatternAndFilename(fileName);
+					fileElm.html(indentionPrefix + fileName.replace(/.{40}/g, "$&" + "<br />"));
+					unencryptedFilesElm.children().removeClass('active');
+					unencryptedFilesElm.find('.indention').show();
+					fileElm.addClass('active');
+					fileElm.children('.indention').hide();
+					smoothScroll($('#target-folder'));
 				} else {
 					newFileNameElm.val('').change();
 				}
