@@ -66,6 +66,9 @@
 			});
 
 			// binds
+			$('#logout').click(function(evt) {
+				logout();
+			});
 			$('#renewCache').click(function(evt) {
 				$.ajax({
 					type: 'POST',
