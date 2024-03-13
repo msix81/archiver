@@ -22,7 +22,7 @@ let login = (req, res) => {
 	let password = req.query.password;
 
 	if (password && (password === config.password)) {
-		let token = jwt.sign({}, config.secret, { expiresIn: '5s'});
+		let token = jwt.sign({}, config.secret, { expiresIn: '24h'});
 		
 		// try to load settings from file automatically
 		config.tryToLoadSettingsFromFile();
