@@ -68,10 +68,10 @@
 			});
 
 			// binds
-			$('#logout').click(function(evt) {
+			$('#logout').on('click', function(evt) {
 				logout();
 			});
-			$('#renewCache').click(function(evt) {
+			$('#renewCache').on('click', function(evt) {
 				$.ajax({
 					type: 'POST',
 					url: basePathBackend + '/archive/update-directory-cache?depth=25',
@@ -85,7 +85,7 @@
 					}
 				});
 			});
-			saveSuggestionElm.click(function(evt) {
+			saveSuggestionElm.on('click', function(evt) {
 			
 				// update locally
 				var currentSuggestionIndex = suggestions.findIndex(function(suggestion) {return suggestion.id == suggestionIdElm.val()});
@@ -100,7 +100,7 @@
 				
 				saveSuggestions();
 			});
-			removeSuggestionElm.click(function(evt) {
+			removeSuggestionElm.on('click', function(evt) {
 			
 				// update locally, then render
 				var currentSuggestionIndex = suggestions.findIndex(function(suggestion) {return suggestion.id == suggestionIdElm.val()});
@@ -110,7 +110,7 @@
 				
 				saveSuggestions();
 			});
-			$('#addSuggestion').click(function(evt) {
+			$('#addSuggestion').on('click', function(evt) {
 				var newSuggestionId = Date.now();
 				
 				// update locally, then render
@@ -129,7 +129,7 @@
 				
 				$('#suggestion-id-' + newSuggestionId).trigger('click');
 			});
-			upgradeSuggestionElm.click(function(evt) {
+			upgradeSuggestionElm.on('click', function(evt) {
 				
 				// update locally, then render			
 				switchSuggestionOrders(-1);
@@ -138,7 +138,7 @@
 				
 				saveSuggestions();
 			});
-			downgradeSuggestionElm.click(function(evt) {
+			downgradeSuggestionElm.on('click', function(evt) {
 				
 				// update locally, then render
 				switchSuggestionOrders(1);
@@ -147,10 +147,10 @@
 				
 				saveSuggestions();
 			});
-			exportSuggestionsElm.click(function(evt) {
+			exportSuggestionsElm.on('click', function(evt) {
 				window.location.href = basePathBackend + 'config/suggestions?download';
 			});
-			importSuggestionsElm.click(function(evt) {
+			importSuggestionsElm.on('click', function(evt) {
 				$('#importSuggestionsFile').click();
 			});
 			importSuggestionsFileElm.on('change', function() {
@@ -192,13 +192,13 @@
 					testSuggestionElm.addClass('btn-danger');
 				}
 			});
-			$('#debugSuggestion').click(function(evt) {
+			$('#debugSuggestion').on('click', function(evt) {
 				var regex = suggestionPatternElm.val();
 				var text = suggestionExampleElm.val();
 				var url = 'https://regex101.com/?regex=' + regex + '&testString=' + text;
 				window.open(url, '_blank').focus();
 			});
-			$('#cloneSuggestion').click(function(evt) {
+			$('#cloneSuggestion').on('click', function(evt) {
 				var newSuggestionId = Date.now();
 				
 				// update locally, then render
