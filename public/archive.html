@@ -222,13 +222,10 @@
 							var fullNameAsCaption = (fullDirectoryNamesGroupedByShortDirectoryName.length > 1);
 							
 							$.each(fullDirectoryNamesGroupedByShortDirectoryName, function(j, fullDirectoryName) {
+								var caption = indentionPrefix + (fullNameAsCaption ? shortDirectoryName + " <small>(in " + fullDirectoryName.replace(shortDirectoryName, "") + ")</small>" : shortDirectoryName);
 								var elm = $('<a href="javascript:void(0)" class="list-group-item list-group-item-action" />')
-									.append(indentionPrefix + (fullNameAsCaption ? shortDirectoryName + " <small>(in " + fullDirectoryName.replace(shortDirectoryName, "") + ")</small>" : shortDirectoryName));
-								
-								elm.click(function() {
-									chooseSubdirectory(fullDirectoryName);
-									return false;
-								});
+									.on('click', function() { chooseSubdirectory(fullDirectoryName); return false; })
+									.append(caption);
 								
 								directoriesElm.append(elm);
 							});			
