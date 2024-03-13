@@ -34,10 +34,10 @@
 			chooseSubdirectory('/');
 
 			// binds
-			rootDirectorySelectorElm.click(function() {
+			rootDirectorySelectorElm.on('click', function() {
 				chooseSubdirectory('/');
 			});
-			$('#archive').click(function() {
+			$('#archive').on('click', function() {
 				$('.alert').hide();
 				var newFileName = newFileNameElm.val();
 				if ((chosenUnencryptedFile != null) && (chosenDirectory != null) && (newFileName != null)) {
@@ -46,26 +46,28 @@
 					$('#errormessage').show();
 				}
 			});
-			$('#logout').click(function(evt) {
+			$('#logout').on('click', function(evt) {
 				logout();
 			});
 			directoryNamePatternElm.on('input', function() {
 				clearTimeout(timer);
-				directoriesElm.empty().append('Verzeichnisse werden geladen...');
+				directoriesElm
+					.empty()
+					.append('Loading directories...');
 				timer = setTimeout(function() {
 					loadSubdirectories(chosenDirectory, 25, directoryNamePatternElm.val(), true);
 				}, 400);
 			});
-			$('#suggestedFileNameDateInc').click(function(evt) {
+			$('#suggestedFileNameDateInc').on('click', function(evt) {
 				spinDate(1);
 			});
-			$('#suggestedFileNameDateDec').click(function(evt) {
+			$('#suggestedFileNameDateDec').on('click', function(evt) {
 				spinDate(-1);
 			});
-			$('#suggestedFileNameDateSelect').click(function(evt) {
+			$('#suggestedFileNameDateSelect').on('click', function(evt) {
 				autoSelectDate(newFileNameElm);
 			});
-			newFileNameSuggestionsLinkElm.click(function(evt) {
+			newFileNameSuggestionsLinkElm.on('click', function(evt) {
 				newFileNameSuggestionsElm.slideToggle();
 				smoothScroll($('#target-file-name'));
 			});
@@ -78,7 +80,7 @@
 					suggestedFileNameDateSpinElm.hide();
 				}
 			});
-			newSuggestionWithTemplateElm.click(function(evt){
+			newSuggestionWithTemplateElm.on('click', function(evt){
 				window.location.href = 'settings.html'
 					+ '?suggestion_example=' + encodeURI(chosenUnencryptedFile) 
 					+ '&suggestion_filename=' + encodeURI(newFileNameElm.val()) 
