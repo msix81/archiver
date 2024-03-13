@@ -20,6 +20,7 @@
 			var suggestionFoldernameElm = $('#suggestionFoldername');
 			var suggestionIdElm = $('#suggestionId');
 			var suggestionOrderElm = $('#suggestionOrder');
+			var suggestionIsFavoriteElm = $('#suggestionIsFavorite');
 			var saveSuggestionElm = $('#saveSuggestion');
 			var removeSuggestionElm = $('#removeSuggestion');
 			var upgradeSuggestionElm = $('#upgradeSuggestion');
@@ -50,7 +51,8 @@
 						example: params.suggestion_example,
 						filename: params.suggestion_filename,
 						foldername: params.suggestion_foldername,
-						order: 0
+						order: 0,
+						isFavorite: false
 					});
 					
 					// display suggestions
@@ -92,6 +94,7 @@
 				suggestions[currentSuggestionIndex].example = suggestionExampleElm.val();
 				suggestions[currentSuggestionIndex].filename = suggestionFilenameElm.val();
 				suggestions[currentSuggestionIndex].foldername = suggestionFoldernameElm.val();
+				suggestions[currentSuggestionIndex].isFavorite = suggestionIsFavoriteElm.prop('checked');
 				
 				renderSuggestions();
 				
@@ -118,7 +121,8 @@
 					example: null,
 					filename: null,
 					foldername: null,
-					order: 0
+					order: 0,
+					isFavorite: false,
 				});
 				
 				renderSuggestions();
@@ -205,7 +209,8 @@
 					example: suggestionExampleElm.val(),
 					filename: suggestionFilenameElm.val(),
 					foldername: suggestionFoldernameElm.val(),
-					order: 0
+					order: 0,
+					isFavorite: suggestionIsFavoriteElm.prop('checked')
 				});
 				
 				renderSuggestions();
@@ -265,6 +270,7 @@
 							suggestionPatternElm.val(suggestion.pattern);
 							suggestionFilenameElm.val(suggestion.filename);
 							suggestionFoldernameElm.val(suggestion.foldername);
+							suggestionIsFavoriteElm.prop('checked', suggestion.isFavorite);
 						} catch (err) {
 							throw new Error('no valid suggestion format');
 						}
@@ -287,6 +293,8 @@
 					suggestionsListElm.append(elm);
 				});
 			}
+			
+			
 			
 		});
 		
@@ -401,7 +409,10 @@
 						</p>
 					</p>
 				</small>
-				
+				<div class="form-group form-check mb-3">
+					<input type="checkbox" class="form-check-input glowable" id="suggestionIsFavorite" placeholder="Favorite suggestion to be displayed for manual selection" />
+					<label class="form-check-label" for="suggestionIsFavorite">Favorite</label>
+				</div>
 				<a class="btn btn-light" href="#" role="button" id="upgradeSuggestion" title="Move record one up">&uarr;</a>
 				
 				<a class="btn btn-light" href="#" role="button" id="downgradeSuggestion" title="Move record one down">&darr;</a>
