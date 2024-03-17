@@ -51,9 +51,6 @@
 			});
 			directoryNamePatternElm.on('input', function() {
 				clearTimeout(timer);
-				directoriesElm
-					.empty()
-					.append('Loading directories...');
 				timer = setTimeout(function() {
 					loadSubdirectories(chosenDirectory, 25, directoryNamePatternElm.val(), true);
 				}, 400);
@@ -196,9 +193,19 @@
 			}
 			
 			function loadSubdirectories(parentDirectoryName, depth, directoryNamePattern, autoOpenFirstSubdirectory) {
+				
+				// do not search in full depth if there is no pattern - looks weird
+				appliedDepth = (directoryNamePattern != '') ? depth : 1;
+				
+				// start search
 				$.ajax({
 					type: 'GET',
-					url: basePathBackend + '/archive/' + encodeURIComponent(parentDirectoryName) + '/directory?depth=' + encodeURIComponent(depth) + '&' + (directoryNamePattern ? 'pattern=' + encodeURIComponent(directoryNamePattern) : ''),
+					url: basePathBackend + '/archive/' + encodeURIComponent(parentDirectoryName) + '/directory?depth=' + encodeURIComponent(appliedDepth) + '&' + (directoryNamePattern ? 'pattern=' + encodeURIComponent(directoryNamePattern) : ''),
+					beforesend: function() {
+						directoriesElm
+							.empty()
+							.append('Loading directories...');
+					}, 
 					success: function(fullDirectoryNames){
 						directoriesElm.empty();
 						var fullDirectoryNamesGroupedByShortDirectoryNames = {};
