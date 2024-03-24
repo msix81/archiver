@@ -268,7 +268,7 @@
 						if (fileNames.length > 0) {
 							$.each(fileNames, function(i, fileName) {
 								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
-								var elm = $('<span class="badge badge-secondary">')
+								var elm = $('<span class="badge badge-secondary" style="cursor:pointer">')
 									.append('<a href="javascript:void(0)" />')
 									.on('click', function() {chooseExistingFilename(fileName)})
 									.append(caption);
@@ -324,7 +324,7 @@
 				if (typeof suggestions !== 'undefined') {
 					$.each(suggestions, function(i, suggestion) {
 						if (suggestion.isFavorite) {
-							var elm = $('<span class="badge badge-secondary">')
+							var elm = $('<span class="badge badge-secondary" style="cursor:pointer">')
 								.append('<a href="javascript:void(0)" />')
 								.on('click', function() {applySuggestion(suggestion, chosenUnencryptedFile)})
 								.append('#' + suggestion.name);
