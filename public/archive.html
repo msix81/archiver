@@ -15,6 +15,7 @@
 		var chosenUnencryptedFile = null;
 		var chosenDirectory = null;
 		var timer;
+		var existingFilenamesCache = null;
 		var indentionPrefix = '<span class="indention">&#9657; </span>';
 
 		$(document).ready(function() {
@@ -76,6 +77,8 @@
 				} else {
 					suggestedFileNameDateSpinElm.hide();
 				}
+				
+				validateNewFileName();
 			});
 			newSuggestionWithTemplateElm.on('click', function(evt){
 				window.location.href = 'settings.html'
@@ -88,6 +91,16 @@
 		
 
 			// --------------------------- functions
+			function validateNewFileName() {
+				
+				// check whether file name exists already in current directory
+				if (existingFilenamesCache && existingFilenamesCache.includes(newFileNameElm.val())) {
+					newFileNameElm.addClass('is-invalid');
+				} else {
+					newFileNameElm.removeClass('is-invalid');
+				}
+			}
+			
 			function spinDate(offset) {
 				let selectionStart = newFileNameElm.get(0).selectionStart;
 				let selectionEnd = newFileNameElm.get(0).selectionEnd;
@@ -264,13 +277,16 @@
 					url: basePathBackend + '/archive/' + encodeURIComponent(directoryName) + '/file',
 					success: function(fileNames){
 						existingFileNamesListElm.empty();
+						existingFilenamesCache = new Array();
 						
 						if (fileNames.length > 0) {
 							$.each(fileNames, function(i, fileName) {
+								var fileNameWithoutGpgExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
+								existingFilenamesCache.push(fileNameWithoutGpgExtension);
 								var caption = ((fileName.length > 40) ? fileName.substr(0, 20) + '...' +  fileName.substr(fileName.length - 20) : fileName);
 								var elm = $('<span class="badge badge-secondary" style="cursor:pointer">')
 									.append('<a href="javascript:void(0)" />')
-									.on('click', function() {chooseExistingFilename(fileName)})
+									.on('click', function() {chooseExistingFilename(fileNameWithoutGpgExtension)})
 									.append(caption);
 								existingFileNamesListElm.append(elm).append(' ');
 							});
@@ -278,6 +294,8 @@
 						} else {
 							existingFileNamesListLinkElm.hide();
 						}
+						
+						validateNewFileName();
 					},
 					error: function(err) {
 						if (err.status == 401) {
@@ -287,9 +305,8 @@
 				});
 			}
 			
-			function chooseExistingFilename(fileName) {
-				var fileNameWithoutExtension = (fileName.substr(fileName.length - 4) == '.gpg') ? fileName.substr(0, fileName.length - 4) : fileName;
-				suggestSearchPatternAndFilename(fileNameWithoutExtension);
+			function chooseExistingFilename(fileNameWithoutGpgExtension) {
+				suggestSearchPatternAndFilename(fileNameWithoutGpgExtension);
 				existingFileNamesListElm.slideUp();
 				
 				// auto-select date in suggestion
@@ -468,7 +485,10 @@
 					<a href="javascript:void(0);" id="suggestedFileNameDateInc">&uarr;</a>&nbsp;
 					<a href="javascript:void(0);" id="suggestedFileNameDateDec">&darr;</a></span>
 				</div>
-				<input type="text" class="form-control glowable" id="newFileName" placeholder="New filename" autocomplete="off" />
+				<input type="text" class="form-control glowable" id="newFileName" placeholder="New filename" autocomplete="off" value="how to setup gpg.txt" />
+				<div class="invalid-feedback">
+					Filename exists already.
+				</div>
 			</div>
 		</form>
 	
