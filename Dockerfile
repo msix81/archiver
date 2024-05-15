@@ -1,4 +1,4 @@
-# build based on Node 16 LTS for Raspbian (remove/change --platform variable if you want to build for another environnment)
+# build based on Node 21 LTS for Raspbian (remove/change --platform variable if you want to build for another environnment)
 FROM --platform=linux/arm/v7 node:21
 
 # Create app directory
