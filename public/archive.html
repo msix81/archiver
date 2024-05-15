@@ -17,6 +17,7 @@
 		var timer;
 		var existingFilenamesCache = null;
 		var indentionPrefix = '<span class="indention">&#9657; </span>';
+		var directorySeparator = (navigator.appVersion.indexOf("Win") != -1) ? '\\' : '/';
 
 		$(document).ready(function() {
 			var unencryptedFilesElm = $('#unencryptedFiles');
@@ -87,7 +88,7 @@
 					+ '&suggestion_foldername=' + encodeURI(chosenDirectory);
 			});
 
-			rootDirectorySelectorElm.html(indentionPrefix + '/');
+			rootDirectorySelectorElm.html(indentionPrefix + directorySeparator);
 		
 
 			// --------------------------- functions
@@ -199,7 +200,7 @@
 			
 			function chooseSubdirectory(directoryName) {
 				chosenDirectory = directoryName;
-				$('#chosenDirectory').text(directoryName.startsWith('/') ? directoryName : '/' + directoryName);
+				$('#chosenDirectory').text((directoryName == ('/')) ? directorySeparator : directorySeparator + directoryName);
 				directoryNamePatternElm.val('');
 				loadSubdirectories(directoryName, 1, null, false);
 				loadExistingFileNamesAsSuggestions(directoryName);
@@ -225,7 +226,7 @@
 						
 						// make sure that directory captions are unambiguous
 						$.each(fullDirectoryNames, function(i, fullDirectoryName) {
-							var shortDirectoryName = fullDirectoryName.split("/").pop(); // this will not work properly on Windows
+							var shortDirectoryName = fullDirectoryName.split(directorySeparator).pop(); // this will not work properly on Windows
 							
 							if (!fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName]) {
 								fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName] = new Array();
