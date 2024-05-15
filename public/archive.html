@@ -381,16 +381,20 @@
 					appliedSuggestion.foldername = folderSuggestion;
 
 					// auto-populate search pattern
-					directoryNamePatternElm
-						.val(appliedSuggestion.foldername || '')
-						.trigger('input');
-					makeGlow(directoryNamePatternElm);
+					if (appliedSuggestion.foldername) {
+						directoryNamePatternElm
+							.val(appliedSuggestion.foldername)
+							.trigger('input');
+						makeGlow(directoryNamePatternElm);
+					}
 					
 					// auto-populate filename
-					newFileNameElm
-						.val(appliedSuggestion.filename ? appliedSuggestion.filename : '')
-						.change();						
-					makeGlow(newFileNameElm);
+					if (appliedSuggestion.filename) {
+						newFileNameElm
+							.val(appliedSuggestion.filename ? appliedSuggestion.filename : '')
+							.change();						
+						makeGlow(newFileNameElm);
+					}
 				}
 			}
 			
