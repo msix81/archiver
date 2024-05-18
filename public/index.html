@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="css/frontend.css">
 	<script src="js/jquery-3.7.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	<script src="js/commons.js"></script>
 	<script type="text/javascript">
 		var basePathBackend = '';
 
@@ -36,7 +37,7 @@
 						location.href = 'archive.html';
 					}
 				}).fail(function(){
-					$('#invalidparamsmessage').show();
+					showTemporaryMessage('danger', 'Error during login, please try again!');
 				});
 			}
 			
@@ -48,24 +49,29 @@
 				$('#login').trigger('submit');
 			}
 			if (queryDict.tokenexpired) {
-				$('#tokenexpired').show();
+				showTemporaryMessage('danger', 'Token expired, please re-login!');
 			}
 		});
 		
 	</script>
 </head>
 <body>
+
+	<!-- Navigation -->
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 		<a class="navbar-brand" href="/">Archiver</a>
 	</nav>
 
+	<!-- Content -->
 	<main role="main" class="container">
-		<div class="alert alert-danger" role="alert" id="invalidparamsmessage" style="display:none">
-			Error during login!
+		
+		<!-- Message area -->
+		<div id="messagearea">
+			<div class="alert" role="alert" id="messagetemplate" style="display:none">
+			</div>
 		</div>
-		<div class="alert alert-danger" role="alert" id="tokenexpired" style="display:none">
-			Token expired, please re-login.
-		</div>
+
+		<!-- Login form -->
 		<form id="login">
 		  <div class="form-group row">
 			<label for="password" class="col-sm-2 col-form-label">Password</label>

@@ -74,7 +74,7 @@
 					type: 'POST',
 					url: basePathBackend + '/archive/update-directory-cache?depth=25',
 					success: function(){
-						$('#successmessage').show().delay(4000).slideUp(400, function() {window.location.reload()});
+						showTemporaryMessage('success', 'Configuration updated successfully!', function() {window.location.reload()});
 					},
 					error: function(err) {
 						if (err.status == 401) {
@@ -84,7 +84,7 @@
 				});
 			});
 			$('#reloadConfiguration').on('click', function(evt) {
-				loadConfig(function() {$('#reloadsuccessmessage').show().delay(4000).slideUp(400);});
+				loadConfig(function() {showTemporaryMessage('success', 'Configuration reloaded!');});
 			});
 			$('#suggestionVariableNowYear').on('click', function(evt) {
 				copyStringToClipboard('<now:year>');
@@ -187,11 +187,11 @@
 						} catch (err) {
 							console.error("No valid JSON input");
 							console.error(err);
-							$('#errormessage').show();
+							showTemporaryMessage('danger', 'Error occured during saving of suggestions!');
 						}
 					}
 					reader.onerror = function (evt) {
-						$('#errormessage').show();
+						showTemporaryMessage('danger', 'Error occured during reading of suggestions!');
 					}
 				}
 			});
@@ -243,7 +243,7 @@
 					data: JSON.stringify(suggestions),
 					success: function(){
 						$('#suggestionsForm input').val('');
-						$('#successmessage').show().delay(4000).slideUp();
+						showTemporaryMessage('success', 'Configuration updated successfully!');
 					},
 					error: function(err) {
 						if (err.status == 401) {
@@ -331,6 +331,8 @@
 	</script>
 </head>
 <body>
+
+	<!-- Navigation -->
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 		<a class="navbar-brand" href="archive.html">Archiver</a>
 		
@@ -350,19 +352,13 @@
 		</div>
 	</nav>
 
+	<!-- Content -->
 	<main role="main" class="container">
 
-		<!-- Alerts -->
-		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
-			Configuration updated successfully!
-		</div>
-		
-		<div class="alert alert-success" role="alert" id="reloadsuccessmessage" style="display:none">
-			Configuration reloaded!
-		</div>
-
-		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
-			Error occurred!
+		<!-- Message area -->
+		<div id="messagearea">
+			<div class="alert" role="alert" id="messagetemplate" style="display:none">
+			</div>
 		</div>
 
 		<!-- Suggestions Settings -->

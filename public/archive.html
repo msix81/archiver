@@ -44,7 +44,7 @@
 				if ((chosenUnencryptedFile != null) && (chosenDirectory != null) && (newFileName != null)) {
 					archive(chosenUnencryptedFile, chosenDirectory, newFileName);
 				} else {
-					$('#errormessage').show();
+					showTemporaryMessage('danger', 'Error occurred, please select a file, a folder and a new filename');
 				}
 			});
 			$('#logout').on('click', function(evt) {
@@ -322,7 +322,7 @@
 					type: 'PUT',
 					url: basePathBackend + '/queue/' + encodeURIComponent(fileName) + '?destination=' + encodeURIComponent(destinationDirectory) + '&newFileName=' + encodeURIComponent(newFileName),
 					success: function(){
-						$('#successmessage').show();
+						showTemporaryMessage('success', 'File successfully archived!');
 						loadQueue();
 						chooseFile(null);
 						chooseSubdirectory('/');
@@ -331,7 +331,7 @@
 						if (err.status == 401) {
 							logout(TOKENEXPIRED);
 						} else {
-							$('#errormessage').show();
+							showTemporaryMessage('danger', 'Error occurred, archiving failed!');
 						}
 					}
 				});
@@ -403,7 +403,7 @@
 	</script>
 </head>
 <body>
-	
+
 	<!-- Navigation -->
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 		<a class="navbar-brand" href="archive.html">Archiver</a>
@@ -423,17 +423,14 @@
 			</ul>
 		</div>
 	</nav>
-
+		
 	<!-- Content -->
 	<main role="main" class="container">
-	
-		<!-- Alerts -->
-		<div class="alert alert-success" role="alert" id="successmessage" style="display:none">
-			File successfully archived!
-		</div>
 
-		<div class="alert alert-danger" role="alert" id="errormessage" style="display:none">
-			Error occurred!
+		<!-- Message area -->
+		<div id="messagearea">
+			<div class="alert" role="alert" id="messagetemplate" style="display:none">
+			</div>
 		</div>
 
 		<!-- Source file selection -->

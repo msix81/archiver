@@ -37,3 +37,14 @@ function smoothScroll(elm) {
 		scrollTop: elm.offset().top - 60
 	}, 700);
 }
+
+function showTemporaryMessage(type, txt, onComplete) {
+	var a = $('#messagetemplate').clone()
+		.removeAttr('id')
+		.addClass('alert-' + type)
+		.html(txt)
+		.show()
+		.delay(4000)
+		.slideUp(400, onComplete);
+	$('#messagearea').append(a);
+}
