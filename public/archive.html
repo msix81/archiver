@@ -199,7 +199,7 @@
 			
 			function chooseSubdirectory(directoryName) {
 				chosenDirectory = directoryName;
-				$('#chosenDirectory').text(((directoryName != ('/')) ? '/' : '') + directoryName.replace('\\', '/'));  // replace backslash by slash to handle directories on Windows
+				$('#chosenDirectory').text(((directoryName != ('/')) ? '/' : '') + directoryName.replaceAll('\\', '/'));  // replace backslash by slash to handle directories on Windows
 				directoryNamePatternElm.val('');
 				loadSubdirectories(directoryName, 1, null, false);
 				loadExistingFileNamesAsSuggestions(directoryName);
@@ -225,7 +225,7 @@
 						
 						// make sure that directory captions are unambiguous
 						$.each(fullDirectoryNames, function(i, fullDirectoryName) {
-							var shortDirectoryName = fullDirectoryName.replace('\\', '/').split('/').pop(); // replace backslash by slash to handle directories on Windows
+							var shortDirectoryName = fullDirectoryName.replaceAll('\\', '/').split('/').pop(); // replace backslash by slash to handle directories on Windows
 							
 							if (!fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName]) {
 								fullDirectoryNamesGroupedByShortDirectoryNames[shortDirectoryName] = new Array();
