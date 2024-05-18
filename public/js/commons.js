@@ -38,7 +38,7 @@ function smoothScroll(elm) {
 	}, 700);
 }
 
-function showTemporaryMessage(type, txt, onComplete) {
+function showTemporaryMessage(type, txt, onComplete, parentElement) {
 	var a = $('#messagetemplate').clone()
 		.removeAttr('id')
 		.addClass('alert-' + type)
@@ -46,5 +46,5 @@ function showTemporaryMessage(type, txt, onComplete) {
 		.show()
 		.delay(4000)
 		.slideUp(400, onComplete);
-	$('#messagearea').append(a);
+	$(parentElement ? parentElement : 'body .messagearea').append(a);
 }

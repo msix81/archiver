@@ -221,7 +221,7 @@
 			// --------------------------- functions
 			function copyStringToClipboard(s) {
 				navigator.clipboard.writeText(s);
-				$('#copiedtoclipboardmessage').hide().show().delay(4000).slideUp();
+				showTemporaryMessage('success', 'Value copied to clipboard!', null, '#suggestionEditFields .messagearea');
 			}
 			
 			function switchSuggestionOrders(deltaToSwitchWith) {
@@ -356,7 +356,7 @@
 	<main role="main" class="container">
 
 		<!-- Message area -->
-		<div id="messagearea">
+		<div class="messagearea">
 			<div class="alert" role="alert" id="messagetemplate" style="display:none">
 			</div>
 		</div>
@@ -386,9 +386,8 @@
 			<!-- Suggestion Form -->
 			<div id="suggestionEditFields" style="display: none" class="card card-body">
 				
-				<!-- Alerts inside form --> 
-				<div class="alert alert-success" role="alert" id="copiedtoclipboardmessage" style="display:none">
-					Value copied to clipboard.
+				<!-- Message area inside form --> 
+				<div class="messagearea">
 				</div>
 				
 				<!-- Form elements -->
