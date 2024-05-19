@@ -40,7 +40,7 @@
 				});
 				
 				// if yes, add this template
-				if (params.suggestion_example && params.suggestion_filename && params.suggestion_foldername) {
+				if (params.suggestion_example || params.suggestion_filename || params.suggestion_foldername) {
 					console.log('Suggestion handed over via link');
 					var newSuggestionId = Date.now();
 					suggestions.push({
