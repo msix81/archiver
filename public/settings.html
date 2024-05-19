@@ -30,7 +30,7 @@
 			var importSuggestionsFileElm = $('#importSuggestionsFile');
 			var suggestionEditFieldsElm = $('#suggestionEditFields');
 			var testSuggestionElm = $('#testSuggestion');
-
+			
 			// --------------------------- onload functionality
 			loadConfig(function() {
 			
@@ -69,12 +69,12 @@
 			$('#logout').on('click', function(evt) {
 				logout();
 			});
-			$('#renewCache').on('click', function(evt) {
+			$('#renewFolderCache').on('click', function(evt) {
 				$.ajax({
 					type: 'POST',
 					url: basePathBackend + '/archive/update-directory-cache?depth=25',
 					success: function(){
-						showTemporaryMessage('success', 'Configuration updated successfully!', function() {window.location.reload()});
+						showTemporaryMessage('success', 'Folder cache renewed successfully!');
 					},
 					error: function(err) {
 						if (err.status == 401) {
@@ -327,7 +327,6 @@
 			}
 			
 		});
-		
 	</script>
 </head>
 <body>
@@ -476,7 +475,7 @@
 		<h3>
 			Folder cache
 		</h3>
-		<a class="btn btn-light" href="#" role="button" id="renewCache" title="Purge directory cache and reload from disk">Rebuild folder cache</a>
+		<a class="btn btn-light" href="#" role="button" id="renewFolderCache" title="Purge directory cache and reload from disk">Rebuild folder cache</a>
 		
 		<div class="ml-1">&nbsp;</div>
 		

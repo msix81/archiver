@@ -39,12 +39,17 @@ function smoothScroll(elm) {
 }
 
 function showTemporaryMessage(type, txt, onComplete, parentElement) {
-	var a = $('#messagetemplate').clone()
-		.removeAttr('id')
-		.addClass('alert-' + type)
-		.html(txt)
+	var id = 'message-' + Math.ceil(Math.random() * 10000000000);
+	
+	$(parentElement ? parentElement : 'body .messagearea').append(
+		$('#messagetemplate').clone()
+			.attr('id', id)
+			.addClass('alert-' + type)
+			.html(txt)
+	);
+	
+	$('#' + id)
 		.show()
-		.delay(4000)
+		.delay(2500)
 		.slideUp(400, onComplete);
-	$(parentElement ? parentElement : 'body .messagearea').append(a);
 }
