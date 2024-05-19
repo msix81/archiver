@@ -115,7 +115,7 @@ let getArchiveDirectoryCollectionService = (req, res) => {
 	var parentDirectory = req.params.directoryName;
 	var directoryNamePattern = req.query.pattern ? req.query.pattern.toLowerCase() : "";
 	var depth = req.query.depth;
-	if (parentDirectory.includes('..') || (directoryNamePattern && directoryNamePattern.includes('..')) || (directoryNamePattern && directoryNamePattern.includes('/')) || !Number.isInteger(parseInt(depth)) || (depth < 0) || (depth > 25)) throw new Error('invalid parameter');
+	if (parentDirectory.includes('..') || (directoryNamePattern && directoryNamePattern.includes('..')) || (directoryNamePattern && directoryNamePattern.includes('/')) || !Number.isInteger(parseInt(depth)) || (depth < 0) || (depth > 25)) throw new Error('Invalid parameter or character used in search pattern');
 	
 	if (directoryCache == null) {
 		updateArchiveDirectoryCache(function() {
@@ -123,9 +123,7 @@ let getArchiveDirectoryCollectionService = (req, res) => {
 		}, 25);
 	} else {
 		res.json(getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth));
-	}
-	
-		
+	}	
 };
 
 function getArchiveDirectoryCollection(parentDirectory, directoryNamePattern, depth) {

@@ -20,6 +20,12 @@ function main () {
 	// embed frontend
 	app.use(express.static('public'));
 
+	// error handler
+	app.use((err, req, res, next) => {
+		console.error(err.stack);
+		res.status(500).send(err.message)
+	});
+	
 	// startup
 	app.listen(config.port, () => console.log(`App listening at port ${config.port}`));
 }
