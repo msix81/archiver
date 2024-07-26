@@ -7,6 +7,8 @@ module.exports = {
 	queueFolderName: process.env.ARCHIVER_QFOLDER || '/archiver-in', // <absolute folder name to read from - when using Archiver in Docker, this would typically be /archiver-in>
 	directoryBlacklist: ['@eaDir'],
 	gpgPublicKeyId: process.env.ARCHIVER_GPGPKID, // <id of your gpg public key to encrpyt with - when using Archiver in Docker, this would typically come from an environment variable>
+	fileUid: parseInt(process.env.ARCHIVER_FILEUID), // <uid that should own an archived file after moving (must be set with fileGid) - when using Archiver in Docker, this would typically come from an environment variable>
+	fileGid: parseInt(process.env.ARCHIVER_FILEGID), // <gid that should own an archived file after moving (must be set with fileUid) - when using Archiver in Docker, this would typically come from an environment variable>
 	port: 8080,
 	suggestions: '[]',
 	settingsFile: process.env.ARCHIVER_SETTINGSFILE || '', // <absolute file name to read settings from during startup>

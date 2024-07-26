@@ -88,17 +88,26 @@ let putQueueFileService = (req, res) => {
 											res.status(500).send('error deleting source file ' + err);
 										} else {
 											console.log('queue file deleted');
-
-											res.status(204).send();
 										}
 									});
 									
+									// change target file's owner and group
+									if (config.fileUid && config.fileGid) {
+										fs.chown(destinationFileName, config.fileUid, config.fileGid, (error) => { 
+											if (error) {
+												res.status(500).send('error changing uid+gid ' + error);
+											} else {
+												console.log('uid+gid set successfully'); 
+												res.status(204).send();
+											}
+										}); 
+									} else {
+										res.status(204).send();
+									}
 								}
 							});
-
 						}
 					});
-					
 				} else {
 					console.log('target exists already');
 					res.status(400).send('file exists already at destination');
