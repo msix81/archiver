@@ -99,7 +99,7 @@
 				evt.preventDefault();
 			});
 			$('#suggestionVariableNowMonthMinusOne').on('click', function(evt) {
-				copyStringToClipboard('<now:month-1>');
+				copyStringToClipboard('<now:yearandmonth-1>');
 				evt.preventDefault();
 			});
 			
@@ -437,7 +437,7 @@
 					<p>
 						Note: You can use named capture groups inside your regex and replace substrings in filename and folder with their values. 
 						Use <var><a href="#" role="button" id="suggestionVariableNowYear" title="Copy <now:year> to clipboard">now:year</a></var>, <var><a href="#" id="suggestionVariableNowMonth" title="Copy <now:month> to clipboard">now:month</a></var> and <var><a href="#" id="suggestionVariableNowDate" title="Copy <now:date> to clipboard">now:date</a></var> to inject the current date. 
-						Use <var><a href="#" id="suggestionVariableNowMonthMinusOne" title="Copy <now:month-1> to clipboard">now:month-1</a></var> to inject the previous month.<br /><br />
+						Use <var><a href="#" id="suggestionVariableNowMonthMinusOne" title="Copy <now:yearandmonth-1> to clipboard">now:yearandmonth-1</a></var> to inject the year and previous month.<br /><br />
 						Example 1:<br/>
 						<code>
 							Pattern: 'Scanned document (?&lt;dd&gt;[0-9]{2})\.(?&lt;mm&gt;[0-9]{2})\.(?&lt;yyyy&gt;[0-9]{4})*\.pdf'<br />
