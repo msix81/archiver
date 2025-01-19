@@ -353,6 +353,12 @@
 				}
 			}
 			
+			function calculatePreviousMonthDateString() {
+				var now = new Date();
+				now.setDate(0);
+				return now.toISOString().substr(0, 7);
+			}
+			
 			function applySuggestion(suggestion, unencryptedFileName) {
 				
 				if (suggestion) {
@@ -369,7 +375,7 @@
 
 					// inject now into named groups
 					var now = new Date();
-					var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:month-1': twoDigits(now.getMonth() + 1 - 1), 'now:date': twoDigits(now.getDate())}};
+					var replacePatternAndValues = {...(matches.groups ? matches.groups : {}), ...{'now:year': now.getFullYear(), 'now:month': twoDigits(now.getMonth() + 1), 'now:yearandmonth-1': calculatePreviousMonthDateString(), 'now:date': twoDigits(now.getDate())}};
 					Object.keys(replacePatternAndValues).forEach(pattern => {
 
 						// ...in filename
@@ -378,6 +384,7 @@
 						// ...in search pattern
 						folderSuggestion = folderSuggestion.replaceAll('<' + pattern + '>', replacePatternAndValues[pattern]);
 					});
+										
 					appliedSuggestion.filename = filenameSuggestion;
 					appliedSuggestion.foldername = folderSuggestion;
 
