@@ -11,7 +11,7 @@ Standard use case:
 1. Add your GPG public key into the Archiver directory using filename "public-key.gpg"
 2. Build the container (note you may need to adopt the "--platform" parameter inside the Dockerfile, depending on your target platform): 
 ```
-docker build . -t <Docker Hub user>/archiver
+docker build . --platform=<your target platform, e.g. "linux/arm64"> -t archiver:latest
 ```
 3. Push the container into your private Docker repo, e.g. Docker Hub:
 ```
